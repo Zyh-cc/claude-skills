@@ -1,6 +1,9 @@
 # Claude 自我进化规则
 
-## 技能库说明
+## 路径说明
+
+- 技能库：`E:\ClaudeCode\ClaudeCodeSkills\`（本目录）
+- 对话日志：`E:\ClaudeCode\ClaudeLogs\`
 
 本目录是 Claude Code 的持久化经验库。每次任务都应遵循以下工作流。
 

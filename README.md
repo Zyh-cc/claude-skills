@@ -22,7 +22,7 @@
 将本仓库克隆到本地，在 `~/.claude/CLAUDE.md` 中写入技能库路径，Claude 会在每次任务前自动查阅相关经验。
 
 ```bash
-git clone https://github.com/your-username/claude-skills.git E:/ClaudeCodeSkills
+git clone https://github.com/Zyh-cc/claude-skills.git E:/ClaudeCode/ClaudeCodeSkills
 ```
 
 ### 查找经验
