@@ -15,6 +15,7 @@
 | 📄 文档 | [document/word-docx.md](document/word-docx.md) | Word .docx 编辑全流程 |
 | 🌐 浏览器 | [browser/agent-browser.md](browser/agent-browser.md) | agent-browser 自动化操作 |
 | 🔧 技能管理 | [skills-management/skill-lifecycle.md](skills-management/skill-lifecycle.md) | Skill 安装、热加载与管理 |
+| 🏗️ 系统架构 | [skills-management/skill-tree-architecture.md](skills-management/skill-tree-architecture.md) | 技能树自进化系统设计与核心待解决问题 |
 | ⚙️ 自动化 | [automation/windows-bat.md](automation/windows-bat.md) | Windows bat 脚本编写与全局命令配置 |
 
 ## 使用方式
