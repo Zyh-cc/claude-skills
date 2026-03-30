@@ -3,6 +3,7 @@
 版本: v1.0
 最后更新: 2026-03-30
 适用工具: Claude Code
+keywords: github, download, api, contents, weeklynews, gh, report, 下载, 仓库, 拉取, 报告
 ---
 
 # 用 gh api 获取仓库目录文件并下载

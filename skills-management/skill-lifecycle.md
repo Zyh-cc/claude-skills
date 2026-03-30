@@ -3,6 +3,7 @@
 版本: v1.0
 最后更新: 2026-03-30
 适用工具: Claude Code
+keywords: skill, install, hotreload, npx, unknown, 安装, 热加载, 找不到
 ---
 
 # Skill 安装与热加载问题

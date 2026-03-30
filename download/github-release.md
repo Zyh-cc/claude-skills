@@ -3,6 +3,7 @@
 版本: v1.0
 最后更新: 2026-03-30
 适用工具: Claude Code
+keywords: github, release, download, msi, exe, assets, gh, 下载, 安装包, 发布包
 ---
 
 # 从 GitHub Release 页面获取真实下载链接

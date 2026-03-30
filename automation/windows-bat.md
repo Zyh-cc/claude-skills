@@ -1,8 +1,9 @@
 ---
 领域: automation
-版本: v1.0
+版本: v1.1
 最后更新: 2026-03-30
 适用工具: Claude Code
+keywords: bat, script, cmd, path, windows, crlf, encoding, 脚本, 命令行, 乱码, 编码, 批处理
 ---
 
 # Windows bat 脚本编写与全局命令配置

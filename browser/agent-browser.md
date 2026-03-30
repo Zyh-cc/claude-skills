@@ -3,6 +3,7 @@
 版本: v1.0
 最后更新: 2026-03-30
 适用工具: Claude Code
+keywords: browser, agent-browser, web, scrape, click, form, 浏览器, 网页, 抓取, 爬虫
 ---
 
 # agent-browser 浏览器自动化基本用法
