@@ -11,9 +11,11 @@
 | 领域 | 文件 | 说明 |
 |------|------|------|
 | 📥 下载 | [download/github-release.md](download/github-release.md) | 从 GitHub Release 获取真实下载链接 |
+| 📥 下载 | [download/gh-api-file-download.md](download/gh-api-file-download.md) | 用 gh api 获取仓库目录文件并下载 |
 | 📄 文档 | [document/word-docx.md](document/word-docx.md) | Word .docx 编辑全流程 |
 | 🌐 浏览器 | [browser/agent-browser.md](browser/agent-browser.md) | agent-browser 自动化操作 |
 | 🔧 技能管理 | [skills-management/skill-lifecycle.md](skills-management/skill-lifecycle.md) | Skill 安装、热加载与管理 |
+| ⚙️ 自动化 | [automation/windows-bat.md](automation/windows-bat.md) | Windows bat 脚本编写与全局命令配置 |
 
 ## 使用方式
 
