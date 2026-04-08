@@ -18,6 +18,7 @@
 | 🏗️ 系统架构 | [skills-management/skill-tree-architecture.md](skills-management/skill-tree-architecture.md) | 技能树自进化系统设计与核心待解决问题 |
 | ⚙️ 自动化 | [automation/windows-bat.md](automation/windows-bat.md) | Windows bat 脚本编写与全局命令配置 |
 | ⚙️ 自动化 | [automation/claude-hooks.md](automation/claude-hooks.md) | Claude Code Hooks 配置与 PowerShell 调用方式 |
+| ⚙️ 配置 | [config/claude-code-api-switch.md](config/claude-code-api-switch.md) | Claude Code 多 API 配置切换（官方/中转站一键切换）|
 
 ## 使用方式
 
