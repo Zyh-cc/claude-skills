@@ -19,6 +19,7 @@
 | ⚙️ 自动化 | [automation/windows-bat.md](automation/windows-bat.md) | Windows bat 脚本编写与全局命令配置 |
 | ⚙️ 自动化 | [automation/claude-hooks.md](automation/claude-hooks.md) | Claude Code Hooks 配置与 PowerShell 调用方式 |
 | ⚙️ 配置 | [config/claude-code-api-switch.md](config/claude-code-api-switch.md) | Claude Code 多 API 配置切换（官方/中转站一键切换）|
+| 🛠️ 工具 | [tools/zotero-pdf2zh-setup.md](tools/zotero-pdf2zh-setup.md) | zotero-pdf2zh 插件安装与本地 server 一键启动 |
 
 ## 使用方式
 
