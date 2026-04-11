@@ -1,7 +1,7 @@
 ---
 领域: automation
-版本: v1.1
-最后更新: 2026-03-30
+版本: v1.2
+最后更新: 2026-04-11
 适用工具: Claude Code
 keywords: bat, script, cmd, path, windows, crlf, encoding, 脚本, 命令行, 乱码, 编码, 批处理
 ---
@@ -11,6 +11,7 @@ keywords: bat, script, cmd, path, windows, crlf, encoding, 脚本, 命令行, �
 ## 版本日志
 | 版本 | 日期 | 变更内容 |
 |------|------|----------|
+| v1.2 | 2026-04-11 | 新增 Unicode 盒型字符（─）致命坑 |
 | v1.1 | 2026-03-30 | 新增中文编码根本原因分析及 bat+ps1 分离方案 |
 | v1.0 | 2026-03-30 | 初始版本 |
 
@@ -77,6 +78,7 @@ PATH 修改对当前窗口不生效，必须重新打开终端。
 | `'/f' 不是内部或外部命令` | bat 文件保存为 Unix LF 换行，cmd 解析 `for /f` 时将 `/f` 当作独立命令 | 转换为 CRLF（PowerShell：`Get-Content \| Set-Content`） |
 | 中文乱码且 `%VAR%` 未展开 | PowerShell `Set-Content` 默认将文件转为 GBK，UTF-8 中文字节破坏了 `%` 等 ASCII 字符 | 重新用 Write 工具写入 |
 | 加了 `chcp 65001` 仍然乱码 | **根本原因**：cmd 读取 bat 文件本身用系统 GBK 编码，`chcp` 只影响终端输出，不影响文件读取阶段。UTF-8 中文是多字节序列，GBK 误读时会把后面紧跟的 ASCII 命令字符（`if`/`for`/`%`）一起"吞掉" | **bat 文件中禁止写中文**，全部用英文 |
+| 注释中的装饰线 `── Title ───` 导致命令崩溃 | 同上，盒型绘图字符（U+2500 `─`，UTF-8: E2 94 80）也是多字节序列，GBK 解析时同样会吞掉紧跟的 ASCII 字符，甚至破坏数行之外的命令 | bat 注释装饰线只用纯 ASCII（`--` 或 `-`），禁止任何 Unicode |
 
 ## 想在 bat 里用中文？改用 bat+ps1 分离方案
 
