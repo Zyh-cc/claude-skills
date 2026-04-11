@@ -13,6 +13,35 @@ keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题,
 |------|------|----------|
 | v1.0 | 2026-03-26 | 初始版本 |
 | v1.1 | 2026-03-30 | 迁移至新格式，补充版本日志 |
+| v1.2 | 2026-04-11 | 补充§零"只读内容"标准流程；根因：未查技能树导致重复踩 GBK 编码坑 |
+
+## 零、只读内容（提取文本，不编辑）
+
+**不要用 pandoc（本机未安装），不要 print 中文到 stdout（GBK 报错）。**
+
+```bash
+# 解包
+PYTHON=/c/Users/13613/AppData/Local/Programs/Python/Python312/python.exe
+SKILL_DIR="/c/Users/13613/.claude/plugins/marketplaces/anthropic-agent-skills/skills/docx"
+$PYTHON "$SKILL_DIR/scripts/office/unpack.py" "E:/路径/文档.docx" C:/Temp/work_dir/
+
+# 提取文本 → 写入文件（不能 print，Windows stdout 是 GBK）
+$PYTHON -c "
+import xml.etree.ElementTree as ET
+tree = ET.parse('C:/Temp/work_dir/word/document.xml')
+ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+lines = []
+for p in tree.getroot().findall('.//w:p', ns):
+    text = ''.join(t.text or '' for t in p.findall('.//w:t', ns))
+    if text.strip(): lines.append(text)
+open('C:/Temp/output.txt', 'w', encoding='utf-8').write('\n'.join(lines))
+"
+
+# 用 Read 工具读取结果
+# Read: C:/Temp/output.txt
+```
+
+---
 
 ## 一、工作流标准流程
 
