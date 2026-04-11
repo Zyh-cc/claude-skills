@@ -1,9 +1,10 @@
 # Claude Code 多 API 配置切换方案
 
-**版本**：v1.1 | **日期**：2026-04-08
+**版本**：v1.2 | **日期**：2026-04-11
 
 ## 版本历史
 
+- **v1.2** (2026-04-11)：新增 claudep.bat 自动检测模式、bat 集中到 C:\TOOLS 的路径硬编码方案、ECONNRESET 根因说明、PowerShell 调用 bat 的编码方案
 - **v1.1** (2026-04-08)：新增 PATH 修改安全指南、Git Bash 兼容方案、事故恢复方法
 - **v1.0** (2026-04-08)：初始版本
 
@@ -21,19 +22,126 @@ Claude Code 通过 `settings.json` 的 `env` 字段注入环境变量，关键�
 | `ANTHROPIC_BASE_URL` | 覆盖 API 请求地址 |
 | `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` | 禁用非必要流量（中转站推荐开启） |
 
-## 实现方案
+## 中转站原理
 
-### 文件布局
+中转站是第三方搭建的代理服务器，帮用户"预先翻好墙"：
 
 ```
+Claude Code → code.newcli.com（中转站，境外服务器）→ api.anthropic.com
+```
+
+**使用中转站时绝对不能同时开代理**，否则请求路径变为：
+```
+Claude Code → Clash Verge → code.newcli.com → api.anthropic.com
+```
+双重代理会导致频繁 `ECONNRESET` 错误。
+
+## 文件布局
+
+```
+C:\TOOLS\
+├── claudep.bat         # 启动 Claude Code（自动检测模式）
+└── switch-api.bat      # API 切换脚本
+
 ~/.claude/
-├── settings.json               # 当前生效配置（脚本管理）
+├── settings.json               # 当前生效配置（脚本管理，勿手动编辑）
 ├── settings.foxcode.json       # 中转站配置
-├── settings.official.json      # 官方账号配置（最简，只保留 permissions）
-└── switch-api.bat              # 切换脚本
+└── settings.official.json      # 官方账号配置
 ```
 
-### settings.foxcode.json
+## claudep.bat（自动检测模式）
+
+启动时检测 `settings.json` 中是否有 `ANTHROPIC_BASE_URL`：
+- **有** → foxcode 模式，跳过代理，直接启动
+- **没有** → 官方模式，设置代理，检测 api.anthropic.com，再启动
+
+```bat
+@echo off
+title Claude Code
+color 0A
+
+:: Detect active mode by checking if ANTHROPIC_BASE_URL is set in settings.json
+findstr /c:"ANTHROPIC_BASE_URL" "%USERPROFILE%\.claude\settings.json" >nul 2>&1
+if %errorlevel% equ 0 goto foxcode_mode
+
+:: ── Official Account Mode ────────────────────────────────────────────────────
+:official_mode
+title Claude Code (Official)
+echo [Mode] Official Account - Clash Verge required (port 7897)
+echo.
+echo [1/3] Setting proxy environment variables...
+set HTTP_PROXY=http://127.0.0.1:7897
+set HTTPS_PROXY=http://127.0.0.1:7897
+set NO_PROXY=localhost,127.0.0.1
+echo [2/3] Verifying connection to Anthropic...
+curl -I -s --connect-timeout 5 https://api.anthropic.com | findstr "HTTP/"
+if %errorlevel% neq 0 (
+    color 0C
+    echo [ERROR] Cannot connect. Please check if Clash Verge is running on port 7897.
+    pause
+    exit /b
+)
+echo [3/3] Starting Claude Code...
+echo -----------------------------------------------------------------------
+claude %*
+goto end
+
+:: ── Foxcode Relay Mode ───────────────────────────────────────────────────────
+:foxcode_mode
+title Claude Code (Foxcode Relay)
+echo [Mode] Foxcode Relay - no proxy needed
+echo -----------------------------------------------------------------------
+claude %*
+
+:end
+if %errorlevel% neq 0 (
+    echo.
+    echo [Program exited with error code %errorlevel%]
+    pause
+)
+```
+
+## switch-api.bat（放在 C:\TOOLS 时用硬编码路径）
+
+**注意**：`%~dp0` 是"bat 文件自身所在目录"。若 bat 放在 `C:\TOOLS` 但 settings json 在 `~\.claude\`，必须硬编码，否则找不到 json 文件。
+
+```bat
+@echo off
+setlocal
+
+set CLAUDE_DIR=C:\Users\13613\.claude\
+
+if "%1"=="foxcode" goto foxcode
+if "%1"=="official" goto official
+if "%1"=="" goto interactive
+
+echo Usage: switch-api [foxcode^|official]
+exit /b 1
+
+:interactive
+echo Claude Code API Switcher
+echo ========================
+echo 1. Foxcode Proxy
+echo 2. Official Account
+echo.
+set /p choice=Select (1/2):
+if "%choice%"=="1" goto foxcode
+if "%choice%"=="2" goto official
+echo Invalid choice
+exit /b 1
+
+:foxcode
+copy /y "%CLAUDE_DIR%settings.foxcode.json" "%CLAUDE_DIR%settings.json" >nul
+echo [OK] Switched to Foxcode (restart Claude Code to apply)
+exit /b 0
+
+:official
+copy /y "%CLAUDE_DIR%settings.official.json" "%CLAUDE_DIR%settings.json" >nul
+echo [OK] Switched to Official (restart Claude Code to apply)
+exit /b 0
+```
+
+## settings.foxcode.json
 
 ```json
 {
@@ -42,112 +150,23 @@ Claude Code 通过 `settings.json` 的 `env` 字段注入环境变量，关键�
     "ANTHROPIC_BASE_URL": "<中转站地址>",
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
-  "permissions": {
-    "allow": [],
-    "deny": []
-  }
+  "permissions": { "allow": [], "deny": [] },
+  "enabledPlugins": { ... },
+  "hooks": { ... }
 }
 ```
 
-### settings.official.json
+## settings.official.json
 
 ```json
 {
-  "permissions": {
-    "allow": [],
-    "deny": []
-  }
+  "permissions": { "allow": [], "deny": [] },
+  "enabledPlugins": { ... },
+  "hooks": { ... }
 }
 ```
 
-### switch-api.bat（支持命令行参数 + 交互式菜单）
-
-```bat
-@echo off
-setlocal
-
-set CLAUDE_DIR=%~dp0
-
-if "%1"=="foxcode" goto foxcode
-if "%1"=="official" goto official
-if "%1"=="" goto interactive
-
-echo 用法: switch-api [foxcode^|official]
-exit /b 1
-
-:interactive
-echo Claude Code API 切换工具
-echo ========================
-echo 1. Foxcode 中转站
-echo 2. 官方账号
-echo.
-set /p choice=请选择 (1/2):
-if "%choice%"=="1" goto foxcode
-if "%choice%"=="2" goto official
-echo 无效选择
-exit /b 1
-
-:foxcode
-copy /y "%CLAUDE_DIR%settings.foxcode.json" "%CLAUDE_DIR%settings.json" >nul
-echo [OK] 已切换到 Foxcode 中转站（重启 Claude Code 生效）
-exit /b 0
-
-:official
-copy /y "%CLAUDE_DIR%settings.official.json" "%CLAUDE_DIR%settings.json" >nul
-echo [OK] 已切换到官方账号（重启 Claude Code 生效）
-exit /b 0
-```
-
-## 加入系统 PATH
-
-### ⚠️ 安全警告
-
-**错误示例（会清空所有系统路径）**：
-```bat
-setx PATH "C:\Users\<用户名>\.claude"  # ❌ 危险！会覆盖原有PATH
-```
-
-**正确方法（追加路径）**：
-```bat
-setx PATH "%PATH%;C:\Users\<用户名>\.claude"  # ✅ 安全，追加到末尾
-```
-
-### 事故恢复方法
-
-如果不慎覆盖了PATH导致系统命令失效（如 `winget`、`git` 等无法识别）：
-
-1. **通过 winget 找回 Claude 路径**：
-   ```
-   C:\Users\<用户名>\AppData\Local\Microsoft\WinGet\Packages\Anthropic.ClaudeCode_Microsoft.Winget.Source_8wekyb3d8bbwe
-   ```
-
-2. **手动恢复系统PATH**：
-   - 右键"此电脑" → 属性 → 高级系统设置 → 环境变量
-   - 编辑用户变量 `Path`，逐条添加回常用路径
-   - 或重启系统后部分路径可能自动恢复
-
-3. **查看当前PATH配置**：
-   ```powershell
-   [Environment]::GetEnvironmentVariable('Path', 'User')
-   ```
-
-### Git Bash 兼容方案
-
-`.bat` 文件在 Git Bash 中无法直接执行，需创建 shell wrapper：
-
-**创建 `~/.claude/switch-api`（无后缀）**：
-```bash
-#!/bin/bash
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cmd.exe /c "$SCRIPT_DIR/switch-api.bat" "$@"
-```
-
-**添加执行权限**：
-```bash
-chmod +x ~/.claude/switch-api
-```
-
-执行后新开终端即可全局使用 `switch-api` 命令（PowerShell/CMD/Git Bash 均可）。
+**注意**：`enabledPlugins` 和 `hooks` 两个配置文件都要保持同步，否则切换后插件/hook 会丢失。
 
 ## 使用命令
 
@@ -157,27 +176,43 @@ switch-api official    # 切换到官方
 switch-api             # 交互式选择
 ```
 
+切换后需**重启 Claude Code** 生效。
+
+## 从 bash 工具调用 bat（编码问题）
+
+`cmd.exe /c` 调用 bat 时，Windows 系统头信息（版本号、路径等含中文）会乱码。
+
+**正确方式**：
+```bash
+powershell.exe -Command "& 'C:\TOOLS\switch-api.bat' foxcode"
+```
+
+PowerShell 输出编码正常，无乱码。
+
+## 加入系统 PATH
+
+**正确方法（追加路径）**：
+```bat
+setx PATH "%PATH%;C:\TOOLS"
+```
+
+⚠️ 直接赋值 `setx PATH "C:\TOOLS"` 会清空所有系统路径，造成 `claude`、`git`、`winget` 等全部失效。
+
+### 事故恢复方法
+
+1. Claude 安装路径：
+   ```
+   C:\Users\<用户名>\AppData\Local\Microsoft\WinGet\Packages\Anthropic.ClaudeCode_Microsoft.Winget.Source_8wekyb3d8bbwe
+   ```
+2. 右键"此电脑" → 属性 → 高级系统设置 → 环境变量，手动恢复路径
+3. 查看当前 PATH：
+   ```powershell
+   [Environment]::GetEnvironmentVariable('Path', 'User')
+   ```
+
 ## 注意事项
 
-- 切换后需**重启 Claude Code** 生效
 - `settings.json` 由脚本管理，不要手动编辑
 - API Key 敏感，`settings.foxcode.json` 不要上传公开仓库
 - `CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC` 值需为字符串 `"1"`，不能是数字 `1`
-- **修改系统 PATH 时务必使用追加方式**（`%PATH%;新路径`），避免覆盖原有路径
-- PATH 修改后需新开终端才能生效
-- 如遇到 PATH 被覆盖，可通过 winget 安装路径找回 Claude，然后手动恢复系统路径
-
-## 经验教训
-
-### PATH 覆盖事故（2026-04-08）
-
-**现象**：执行 `setx PATH "C:\Users\<用户名>\.claude"` 后，系统命令全部失效（`claude`、`winget`、`git` 等无法识别）
-
-**原因**：直接赋值覆盖了原有 PATH，导致所有系统路径丢失
-
-**影响**：用户需手动恢复所有系统路径，虽然功能最终恢复但留下大量重复路径
-
-**预防**：
-1. 修改系统级配置前先备份当前值
-2. 使用追加语法而非直接赋值
-3. 涉及关键环境变量时，先展示命令让用户确认再执行
+- 修改系统 PATH 务必使用追加方式
