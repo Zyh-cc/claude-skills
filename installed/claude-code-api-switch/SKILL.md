@@ -56,7 +56,7 @@ In foxcode mode, close or ignore Clash Verge for Claude Code.
 
 When bat is in `C:\TOOLS\` but settings JSONs are in `~\.claude\`, `%~dp0` points to the wrong place. Hardcode:
 ```bat
-set CLAUDE_DIR=C:\Users\13613\.claude\
+set CLAUDE_DIR=C:\Users\<username>\.claude\
 ```
 
 ## enabledPlugins and hooks must be in both settings files

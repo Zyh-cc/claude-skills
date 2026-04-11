@@ -3,7 +3,7 @@ name: pointcloud-ground-filter
 description: Validate and compare point cloud ground segmentation methods (CSF, RANSAC) with Open3D visualization. Use this when evaluating ground filtering algorithms on UAV or roadside LiDAR data, or when needing to visually inspect segmentation quality across multiple frames.
 ---
 
-## Validated parameters (UAV 150m, AeroGround-Dataset)
+## Validated parameters (UAV point cloud dataset, flight altitude 150m)
 
 | Method | Parameters | Result |
 |--------|-----------|--------|

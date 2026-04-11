@@ -15,7 +15,7 @@ Local paths on this machine:
 powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
 
 # Create venv and install dependencies
-$env:Path = 'C:\Users\13613\.local\bin;' + $env:Path
+$env:Path = 'C:\Users\<username>\.local\bin;' + $env:Path
 cd D:\zotero\server
 uv venv zotero-pdf2zh-venv --python=3.12
 uv pip install -p D:\zotero\server\zotero-pdf2zh-venv\Scripts\python.exe `
@@ -45,4 +45,4 @@ echo Server started on port 8890
 |-------|-------|-----|
 | Tsinghua PyPI mirror timeout | Slow mirror, ~120s timeout | Use official source (no `--index-url`) |
 | install bat doesn't start server | install ≠ start | Run server.py separately after install |
-| `uv` not found | PATH not updated | New terminal or `$env:Path = 'C:\Users\13613\.local\bin;...'` |
+| `uv` not found | PATH not updated | New terminal or `$env:Path = 'C:\Users\<username>\.local\bin;...'` |

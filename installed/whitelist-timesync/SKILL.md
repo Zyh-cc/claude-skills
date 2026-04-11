@@ -16,7 +16,7 @@ Any HTTP server returns a `Date` header with current server time. Use a whitelis
 import requests, subprocess
 from datetime import datetime, timezone
 
-OSS_URL = "http://nanjing-must.oss-cn-shanghai.aliyuncs.com"
+OSS_URL = "http://<your-bucket>.oss-cn-<region>.aliyuncs.com"
 
 def sync_time():
     resp = requests.head(OSS_URL, timeout=10)
@@ -35,7 +35,7 @@ def sync_time():
 Description=Time Sync via HTTP
 After=network-online.target
 Wants=network-online.target
-Before=must.service
+Before=<your-main-service>.service
 
 [Service]
 Type=oneshot
