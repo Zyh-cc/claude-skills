@@ -21,6 +21,7 @@
 |------|-----------|-----------|
 | [ffmpeg-rtsp-debugging.md](debugging/ffmpeg-rtsp-debugging.md) | ffmpeg拉取RTSP流失败的排查路径（音频、连接、格式） | ffmpeg、RTSP、摄像头、视频流 |
 | [linux-routing-debug.md](debugging/linux-routing-debug.md) | Linux多网卡路由不通的排查与修复 | 路由、routing、网卡、iptables |
+| [open3d-windows-chinese-path.md](debugging/open3d-windows-chinese-path.md) | open3d 在 Windows 中文路径下读写 PCD 静默失败，tempfile 中转绕过 | open3d、PCD、中文路径、Windows、read_point_cloud、write_point_cloud |
 | [video-lidar-frame-alignment.md](debugging/video-lidar-frame-alignment.md) | 视频与LiDAR点云帧对齐问题（时间戳、帧率匹配） | 帧对齐、时间戳、LiDAR、点云、同步 |
 | [whitelist-network-timesync.md](debugging/whitelist-network-timesync.md) | 白名单网络环境下NTP时间同步失败的解决方案 | 时间同步、NTP、内网、白名单 |
 
