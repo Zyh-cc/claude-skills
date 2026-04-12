@@ -12,6 +12,7 @@
 |------|-----------|-----------|
 | [china-policy-search.md](document/china-policy-search.md) | 中国政府政策文件检索：层级顺序、年份陷阱、可引用格式 | 政策背景、政策文件、规划、论文引用、法规 |
 | [word-docx.md](document/word-docx.md) | .docx文件的读取、编辑、创建（含XML直接操作） | .docx、Word文档、docx |
+| [biweekly-report-docx.md](document/biweekly-report-docx.md) | 为张天承生成两周总结.docx周报（含格式规范、NODE_PATH坑、中文引号坑） | 周报、两周总结、两周报、work report |
 
 ---
 
