@@ -86,8 +86,8 @@ const fontBody    = { ascii: "Times New Roman", eastAsia: "宋体",  hAnsi: "Tim
 const fontHeading = { ascii: "Times New Roman", eastAsia: "黑体",  hAnsi: "Times New Roman", cs: "Times New Roman" };
 const spacing15   = { line: 360, rule: "auto" };
 
-const title      = t => new Paragraph({ children: [new TextRun({ text: t, font: fontHeading, size: 32, bold: false })] });
-const sectionHead= t => new Paragraph({ children: [new TextRun({ text: t, font: fontHeading, size: 32 })] });
+const title      = t => new Paragraph({ spacing: spacing15, children: [new TextRun({ text: t, font: fontHeading, size: 32, bold: false })] });
+const sectionHead= t => new Paragraph({ spacing: spacing15, children: [new TextRun({ text: t, font: fontHeading, size: 32 })] });
 const planItem   = (t, strike=false) => new Paragraph({ spacing: spacing15,
   children: [new TextRun({ text: t, font: { ascii:"宋体", eastAsia:"宋体", hAnsi:"宋体", cs:"宋体" }, size: 24, strike })] });
 const subTitle   = t => new Paragraph({ spacing: spacing15,
