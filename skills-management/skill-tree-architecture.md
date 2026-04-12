@@ -33,24 +33,21 @@
 
 ---
 
-## 三层加载机制
+## 加载机制
 
 ```
+[会话开始]
+     ↓
+SessionStart hook → 一句话提示"personal skills available via Skill tool"
+     ↓
 [用户发消息]
      ↓
-UserPromptSubmit hook
-     ↓ 关键词匹配 source 技能文件 keywords 字段
-有匹配 → 注入完整内容到 Claude 上下文（~300-500 token）
-无匹配 → 0 额外 token
+Claude 判断相关性 → Skill 工具调用（从 ~/.claude/skills/ 加载）
      ↓
-[Claude 执行任务]
-     ↓
-Claude 判断是否需要 installed 技能 → Skill 工具调用
-     ↓
-Stop hook
-     ↓
-提示用户：是否有新经验？更新技能树并同步 GitHub
+Stop hook → 提示是否有新经验？更新技能树并同步 GitHub
 ```
+
+> UserPromptSubmit hook 已禁用（原关键词匹配+全文注入方案与 Skill 工具冗余，改为统一走 Skill 工具）
 
 ---
 
