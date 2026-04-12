@@ -17,30 +17,24 @@ Each skill is stored in two forms:
 
 ## 2. How It Works
 
-The skill tree is wired into Claude Code through three mechanisms:
+The skill tree uses two complementary mechanisms:
 
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                     Session Start                        │
-│  hooks/session-start.ps1 → injects skill file list      │
-│                     into Claude's context                │
+│  hooks/session-start.ps1 → one-line hint injected       │
+│  "Personal skills available via Skill tool"             │
 └────────────────────────┬────────────────────────────────┘
                          │
 ┌────────────────────────▼────────────────────────────────┐
-│                   Each User Message                      │
-│  hooks/user-prompt.ps1 → keyword match against          │
-│  source skills → injects matched skill content          │
-│  (0 extra tokens if no match)                           │
-└────────────────────────┬────────────────────────────────┘
-                         │
-┌────────────────────────▼────────────────────────────────┐
-│                 Explicit Skill Invocation                │
-│  installed/ skills auto-loaded by Claude Code →         │
-│  Claude invokes via Skill tool when relevant            │
+│                 Skill Tool Invocation                    │
+│  installed/ skills in ~/.claude/skills/ →               │
+│  Claude auto-invokes via Skill tool when relevant       │
+│  (descriptions drive triggering, not keywords)          │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Source skills** are injected automatically based on keyword matching — Claude sees the full content without explicitly asking. **Installed skills** are always discoverable by Claude Code and invoked on demand. The two layers complement each other.
+**Installed skills** are always discoverable and invoked on demand by Claude's Skill tool. **Source skills** (`<category>/<skill>.md`) serve as the full-detail archive — version history, extended context, deep pitfall analysis — for human reference and future skill updates.
 
 ---
 
@@ -71,7 +65,10 @@ claude-skills/
 │   ├── whitelist-timesync/SKILL.md
 │   ├── video-lidar-align/SKILL.md
 │   ├── pointcloud-ground-filter/SKILL.md
-│   └── zotero-pdf2zh/SKILL.md
+│   ├── zotero-pdf2zh/SKILL.md
+│   ├── biweekly-report/SKILL.md
+│   ├── open3d-chinese-path/SKILL.md
+│   └── dataset-dir-restructure/SKILL.md
 │
 ├── automation/                # Windows automation, bat scripts, hooks
 ├── browser/                   # Browser automation
@@ -104,9 +101,8 @@ Get-ChildItem $base -Directory | ForEach-Object {
     Copy-Item (Join-Path $_.FullName "SKILL.md") $dst
 }
 
-# 3. Register hooks in ~/.claude/settings.json:
-# SessionStart:    powershell -ExecutionPolicy Bypass -File 'E:\ClaudeCode\ClaudeCodeSkills\hooks\session-start.ps1'
-# UserPromptSubmit: cat | powershell -ExecutionPolicy Bypass -File 'E:\ClaudeCode\ClaudeCodeSkills\hooks\user-prompt.ps1'
+# 3. Register SessionStart hook in ~/.claude/settings.json:
+# SessionStart: powershell -ExecutionPolicy Bypass -File 'E:\ClaudeCode\ClaudeCodeSkills\hooks\session-start.ps1'
 
 # 4. Point CLAUDE.md at the skill tree (add to ~/.claude/CLAUDE.md):
 # 技能库：E:\ClaudeCode\ClaudeCodeSkills\
@@ -128,11 +124,10 @@ Claude Code auto-invokes installed skills when it detects a match. You can also 
 ### Adding a new skill
 
 1. **Create source file**: copy `_template.md` to `<category>/<skill-name>.md`, fill in problem/solution/pitfalls
-2. **Add keywords**: add a `keywords:` field in the frontmatter (ASCII only) for hook-based matching
-3. **Create installed version**: create `installed/<skill-name>/SKILL.md` — streamlined version with no version history, only practical commands and pitfalls
-4. **Update index**: add a row to `SKILL_INDEX.md`
-5. **Deploy installed version**: copy to `~/.claude/skills/<skill-name>/SKILL.md`
-6. **Push to GitHub**: `git add . && git commit -m "feat: add <skill-name> skill" && git push`
+2. **Create installed version**: create `installed/<skill-name>/SKILL.md` — streamlined version with no version history, only practical commands and pitfalls
+3. **Update index**: add a row to `SKILL_INDEX.md`
+4. **Deploy installed version**: copy to `~/.claude/skills/<skill-name>/SKILL.md`
+5. **Push to GitHub**: `git add . && git commit -m "feat: add <skill-name> skill" && git push`
 
 ### Updating an existing skill
 
