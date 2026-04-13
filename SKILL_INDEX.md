@@ -20,6 +20,7 @@
 
 | 文件 | 一句话描述 | 触发关键词 |
 |------|-----------|-----------|
+| [debug.md](debugging/debug.md) | 修 Bug 通用五步流程：先定位根因、找全同类、提交前自检、失败时先理解再换方案 | bug、修bug、调试、不行了、失效、报错、debug、fix |
 | [regression-debugging.md](debugging/regression-debugging.md) | "之前好用，现在坏了" → 先查 git log 找变化点，再谈根因 | 之前可以、退化、regression、之前好用、现在不行 |
 | [ffmpeg-rtsp-debugging.md](debugging/ffmpeg-rtsp-debugging.md) | ffmpeg拉取RTSP流失败的排查路径（音频、连接、格式） | ffmpeg、RTSP、摄像头、视频流 |
 | [linux-routing-debug.md](debugging/linux-routing-debug.md) | Linux多网卡路由不通的排查与修复 | 路由、routing、网卡、iptables |
