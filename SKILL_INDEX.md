@@ -36,6 +36,7 @@
 |------|-----------|-----------|
 | [claude-hooks.md](automation/claude-hooks.md) | Claude Code hooks 配置与常见模式 | hooks、钩子、自动执行、before/after |
 | [windows-bat.md](automation/windows-bat.md) | Windows bat脚本编写注意事项 | .bat、批处理、Windows脚本 |
+| [post-code-review.md](automation/post-code-review.md) | 生成代码后两轮校核：用 code-reviewer 拦截变量作用域/跨文件集成/命名约定 bug | 校核、code review、生成代码后、提交前、审查、检查代码 |
 
 ---
 
