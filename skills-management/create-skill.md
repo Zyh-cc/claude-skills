@@ -1,6 +1,6 @@
 ---
 领域: skills-management
-版本: v1.0
+版本: v1.1
 最后更新: 2026-04-13
 适用工具: Claude Code
 keywords: 把这个生成技能, 写成技能, 记录成技能, 保存为技能, create skill, generate skill
@@ -9,9 +9,11 @@ keywords: 把这个生成技能, 写成技能, 记录成技能, 保存为技能,
 # 把当前经验生成技能的完整流程
 
 ## 版本日志
+
 | 版本 | 日期 | 变更内容 |
 |------|------|----------|
 | v1.0 | 2026-04-13 | 初始版本，整理自实际操作经验 |
+| v1.1 | 2026-04-13 | 去除硬编码 Windows 路径，改用 $SKILLS_REPO 变量 |
 
 ## 问题场景
 
@@ -28,32 +30,39 @@ keywords: 把这个生成技能, 写成技能, 记录成技能, 保存为技能,
 - description（触发条件，不是内容摘要，不含流程）
 - 触发关键词（中英文）
 
+> **环境变量**：`$SKILLS_REPO` = 技能库本地克隆根目录
+> - Windows: `E:\ClaudeCode\ClaudeCodeSkills`
+> - Linux:    `~/ClaudeCodeSkills`（或实际克隆路径）
+
 **第二步：写 source 文件**
-路径：`E:\ClaudeCode\ClaudeCodeSkills\<分类>\<技能名>.md`
+路径：`$SKILLS_REPO/<分类>/<技能名>.md`
 按 `_template.md` 格式，含版本日志、问题场景、解决方案、踩坑、相关经验。
 
 **第三步：写 installed 文件**
-路径：`E:\ClaudeCode\ClaudeCodeSkills\installed\<技能名>\SKILL.md`
+路径：`$SKILLS_REPO/installed/<技能名>/SKILL.md`
 superpowers 格式，frontmatter 含 `name` + `description`（description 只写触发条件）。
 
 **第四步：更新 SKILL_INDEX.md**
 在对应分类表格追加一行（文件 / 描述 / 触发关键词）。
 
 **第五步：deploy 到 ~/.claude/skills/**
+
 ```bash
 mkdir -p ~/.claude/skills/<技能名>
-cp "E:/ClaudeCode/ClaudeCodeSkills/installed/<技能名>/SKILL.md" ~/.claude/skills/<技能名>/
+cp "$SKILLS_REPO/installed/<技能名>/SKILL.md" ~/.claude/skills/<技能名>/
 ```
 
 **第六步：测试**
+
 ```bash
-head -5 ~/.claude/skills/<技能名>/SKILL.md   # 验证 frontmatter
+head -5 ~/.claude/skills/<技能名>/SKILL.md  # 验证 frontmatter
 # 在 Claude Code 中用 Skill tool 调用，确认有内容输出
 ```
 
 **第七步：推送**
+
 ```bash
-cd "E:/ClaudeCode/ClaudeCodeSkills"
+cd "$SKILLS_REPO"
 git add <分类>/<技能名>.md installed/<技能名>/SKILL.md SKILL_INDEX.md
 git commit -m "feat: add <技能名> skill"
 git push
