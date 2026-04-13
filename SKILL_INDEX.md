@@ -68,6 +68,7 @@
 |------|-----------|-----------|
 | [点云地面滤除验证.md](data-processing/点云地面滤除验证.md) | CSF点云地面滤除参数选择与验证方法（UAV点云） | 点云、CSF、地面滤除、LiDAR、UAV |
 | [项目目录结构重组.md](data-processing/项目目录结构重组.md) | 数据集项目目录批量迁移+脚本路径修正+README同步 | 目录结构、重组、路径、项目整理、硬编码、mv |
+| [3d-annotation-tool-selection.md](data-processing/3d-annotation-tool-selection.md) | UAV LiDAR 点云标注工具选型三要素：ry定义/大坐标精度/round-trip | 标注工具、labelCloud、3DBat、KITTI、ry、UTM坐标、点云标注 |
 ---
 
 ## 🗂️ skills-management — 技能库管理
