@@ -70,6 +70,7 @@
 | [项目目录结构重组.md](data-processing/项目目录结构重组.md) | 数据集项目目录批量迁移+脚本路径修正+README同步 | 目录结构、重组、路径、项目整理、硬编码、mv |
 | [3d-annotation-tool-selection.md](data-processing/3d-annotation-tool-selection.md) | UAV LiDAR 点云标注工具选型三要素：ry定义/大坐标精度/round-trip | 标注工具、labelCloud、3DBat、KITTI、ry、UTM坐标、点云标注 |
 | [聚类预标注调参分析框架.md](data-processing/聚类预标注调参分析框架.md) | 聚类过滤后的调参诊断：置信度分层统计、疑似漏检/误报检测、GUI分析工具设计 | 聚类、预标注、调参、置信度、漏检、误报、DBSCAN、HDBSCAN、analyze_detail |
+| [open3d-interactive-review.md](data-processing/open3d-interactive-review.md) | Open3D bbox交互审核：Ray-OBB射线拾取、FP/FN双击标记、窗口缓存保留状态、JSON日志输出 | open3d、交互、鼠标回调、bbox拾取、射线、ray、OBB、FP、FN、标记、审核日志 |
 ---
 
 ## 🗂️ skills-management — 技能库管理
