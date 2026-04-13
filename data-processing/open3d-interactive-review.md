@@ -1,6 +1,6 @@
 # Open3D 交互审核：Ray-OBB 拾取 + FP/FN 标记 + 日志输出
 
-**版本**：v1.0 — 2026-04-13  
+**版本**：v1.2 — 2026-04-13  
 **项目**：AeroGround-Dataset `vis_preannot_window.py`  
 **环境**：Python 3.10，Open3D 0.19.0
 
@@ -18,16 +18,48 @@
 
 ## 核心 API
 
-### 回调签名（Open3D 0.19.0）
+### Open3D 0.19 鼠标回调限制（重要）
+
+`register_mouse_move_callback` 和 `register_mouse_button_callback` 在 Open3D 0.19
+中**完全替换** GLFW 底层回调，无论返回 `True` 还是 `False`，
+`Visualizer::MouseMoveCallback / MouseButtonCallback`（维护拖拽状态）都不再被调用，
+导致旋转/平移永久失效。**两者都不能注册。**
+
+### 正确方案：animation_callback + Win32 轮询
 
 ```python
-# 鼠标移动（持续追踪坐标）
-vis.register_mouse_move_callback(lambda v, x, y: ...)   # 返回 bool
+import ctypes, time
 
-# 鼠标按键（单击/双击）
-vis.register_mouse_button_callback(lambda v, button, action, mods: ...)
-# button=0 左键，action=1 按下，action=0 释放
+state['lbtn_was_down'] = False
+
+class _PT(ctypes.Structure):
+    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
+
+def _cursor_in_window():
+    pt = _PT()
+    ctypes.windll.user32.GetCursorPos(ctypes.byref(pt))
+    hwnd = ctypes.windll.user32.GetForegroundWindow()
+    if hwnd:
+        ctypes.windll.user32.ScreenToClient(hwnd, ctypes.byref(pt))
+    return float(pt.x), float(pt.y)
+
+def _on_animation(v) -> bool:
+    lbtn_down = bool(ctypes.windll.user32.GetAsyncKeyState(0x01) & 0x8000)
+    was_down  = state['lbtn_was_down']
+    state['lbtn_was_down'] = lbtn_down
+    if not (lbtn_down and not was_down):   # 只处理按下边沿
+        return False
+    mx, my = _cursor_in_window()
+    b = find_clicked_bbox(v, mx, my, ...)
+    ...
+    return False
+
+vis.register_animation_callback(_on_animation)
+# 不调用 register_mouse_button_callback / register_mouse_move_callback
 ```
+
+`register_animation_callback` 定义在基类 `Visualizer` 上，不替换任何 GLFW 处理器，
+不影响默认的拖拽行为。
 
 ### 射线生成（像素 → 世界坐标）
 
@@ -164,6 +196,7 @@ while log_path.exists():
 | rejected idx 碰撞 | `for rej_type` 循环内用 `enumerate()` 每次从 0 开始 | 用跨两个 sub-list 的全局计数器 `rej_idx` |
 | DETAIL_DIR 未同步 | `--annot_dir` 只更新 `ANNOT_DIR`，`DETAIL_DIR` 仍指向旧路径 | `global ANNOT_DIR, DETAIL_DIR` 一起更新 |
 | 双击后第二次 norm 冗余 | `R_cw.T` 正交，norm 不变 | 只保留第一次 normalize，删除 `ray_dir /= norm` |
+| **register_mouse_move_callback 或 register_mouse_button_callback 导致拖拽失效** | Open3D 0.19 中两者都完全替换 GLFW 回调，`Visualizer::MouseMoveCallback/MouseButtonCallback` 不再被调用，拖拽状态无法维护 | **两者都不注册**；改用 `register_animation_callback` + Win32 `GetAsyncKeyState` 轮询左键边沿 |
 
 ---
 

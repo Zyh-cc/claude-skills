@@ -20,6 +20,7 @@
 
 | 文件 | 一句话描述 | 触发关键词 |
 |------|-----------|-----------|
+| [regression-debugging.md](debugging/regression-debugging.md) | "之前好用，现在坏了" → 先查 git log 找变化点，再谈根因 | 之前可以、退化、regression、之前好用、现在不行 |
 | [ffmpeg-rtsp-debugging.md](debugging/ffmpeg-rtsp-debugging.md) | ffmpeg拉取RTSP流失败的排查路径（音频、连接、格式） | ffmpeg、RTSP、摄像头、视频流 |
 | [linux-routing-debug.md](debugging/linux-routing-debug.md) | Linux多网卡路由不通的排查与修复 | 路由、routing、网卡、iptables |
 | [open3d-windows-chinese-path.md](debugging/open3d-windows-chinese-path.md) | open3d 在 Windows 中文路径下读写 PCD 静默失败，tempfile 中转绕过 | open3d、PCD、中文路径、Windows、read_point_cloud、write_point_cloud |
