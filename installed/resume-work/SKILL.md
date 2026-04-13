@@ -13,10 +13,13 @@ gh api repos/Zyh-cc/AeroGround-Dataset/contents/docs/progress.md \
   --jq '.content' | base64 -d > AeroGround-Dataset/docs/progress.md
 ```
 
-**第二步：只读末尾"已做工作"节**
+**第二步：只读"已做工作"节**
 ```bash
-# 不要全文读，只读最后 40 行左右
-# 用 Read 工具加 offset 定位到"已做工作"节
+# 先定位节的起始行号
+gh api repos/Zyh-cc/AeroGround-Dataset/contents/docs/progress.md \
+  --jq '.content' | base64 -d | grep -n "^## 已做工作"
+# 再用 Read 工具 + offset 从该行读到文件末尾
+# ❌ 不要用 tail -N，文件增长后 tail 会落在规划章节而非已做工作
 ```
 
 MEMORY.md 已经在上下文里，不需要再读。
