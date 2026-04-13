@@ -78,5 +78,6 @@
 
 | 文件 | 一句话描述 | 触发关键词 |
 |------|-----------|-----------|
+| [create-skill.md](skills-management/create-skill.md) | 把当前经验生成技能的完整七步流程（source→installed→index→deploy→test→push） | 把这个生成技能、写成技能、记录成技能、保存为技能、create skill |
 | [skill-lifecycle.md](skills-management/skill-lifecycle.md) | 技能文件的创建、更新、归档规范 | 新建技能、更新技能、技能模板 |
 | [skill-tree-architecture.md](skills-management/skill-tree-architecture.md) | 技能树目录结构设计原则 | 技能树结构、分类、组织 |
