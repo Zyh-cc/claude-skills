@@ -1,50 +1,72 @@
 ---
 name: china-policy-search
-description: Search Chinese government policy documents for academic paper background sections. Use this whenever writing a Chinese thesis or journal paper that needs policy citations — Five-Year Plans, State Council documents, ministry notices. Trigger on any request like "找政策文件", "政策背景", "引用法规", or "写绪论政策段落".
+description: Search Chinese government policy documents for academic paper background sections. Use this whenever writing a Chinese thesis or journal paper that needs policy citations — Five-Year Plans, State Council documents, ministry notices. Trigger on any request like "找政策文件", "政策背景", "引用法规", "写绪论政策段落", "找国务院文件", "五年规划".
 ---
 
-## Core principle: search top-down by hierarchy
+## 核心原则：自上而下搜索
 
 ```
-Level 1 (highest): NPC-approved Five-Year Plan (全国人大批准的五年规划纲要)
-Level 2: CPC Central Committee documents
-Level 3: State Council orders (国发/国办发〔〕号)
-Level 4: Multi-ministry joint documents (工信部联〔〕号)
-Level 5: Single ministry documents
-Level 6: Provincial/local documents
+Level 1（最高）：全国人大批准的五年规划纲要
+Level 2：中共中央文件
+Level 3：国务院令（国发/国办发〔〕号）
+Level 4：多部委联合文件（工信部联〔〕号）
+Level 5：单部委文件
+Level 6：省市地方文件
 ```
 
-## Step 1: Identify the current Five-Year Plan period
+---
+
+## Step 1：确认当前五年规划期
 
 ```
-Current date → Plan:
-  2021-2025 → 十四五
-  2026-2030 → 十五五 (current)
-  2031-2035 → 十六五
+2021–2025 → 十四五
+2026–2030 → 十五五（当前）
+2031–2035 → 十六五
 ```
 
-Search template: `{topic} {plan-name}规划纲要 {current-year}`
+---
 
-## Step 2: Four search queries that cover most topics
+## Step 2：执行四条搜索查询
 
-1. `{主题} 十五五规划纲要` — top-level plan
-2. `{主题} 政府工作报告 {current-year}` — latest government statement
-3. `{主题} 国务院令 OR 国务院文件 文号` — administrative regulations with document number
-4. `{主题} 工信部 OR 发改委 实施方案 文号` — ministry implementation documents
+```
+① {主题} 十五五规划纲要           → 顶层规划
+② {主题} 政府工作报告 {当前年}    → 最新政府表态
+③ {主题} 国务院令 OR 国务院文件 文号  → 行政法规（带文号）
+④ {主题} 工信部 OR 发改委 实施方案 文号  → 部委落地文件
+```
 
-## Citation formats (Chinese thesis standard)
+搜索入口：gov.cn / npc.gov.cn（优先中文关键词，政策文件是中文第一手来源）
 
-| Level | Format |
-|-------|--------|
-| Five-Year Plan | 国民经济和社会发展第十五个五年规划纲要[Z]. 北京: 人民出版社, 2026. |
-| State Council order | 国务院. 文件名: 国令第N号[A]. 年份. |
-| Multi-ministry doc | 工业和信息化部等. 文件名: 文号[A]. 年份. |
+---
+
+## Step 3：验证级别，选最高层级
+
+找到文件后确认：
+- 是否有文号（如 国发〔2021〕N号）？有文号才能作为正式引用
+- 是否被五年规划收录？如是，引用规划即可，不必引部委文件
+- 发布机构是谁？国务院 > 多部委 > 单部委
+
+---
+
+## Step 4：写入论文引用
+
+| 级别 | 参考文献格式 |
+|------|------------|
+| 五年规划 | 国民经济和社会发展第十五个五年规划纲要[Z]. 北京: 人民出版社, 2026. |
+| 国务院令 | 国务院. 文件名: 国令第N号[A]. 年份. |
+| 多部委文件 | 工业和信息化部等. 文件名: 文号[A]. 年份. |
+
+**正文引用方式示例**：
+> 《国民经济和社会发展第十五个五年规划纲要》明确提出……[引用序号]
+
+---
 
 ## Pitfalls
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| Missing the Five-Year Plan | Searched "政策文件" not "规划纲要" | Always start with 五年规划 |
-| Results stuck in 2023-2024 | Hard-coded year in query | Use current year or omit year |
-| Found ministry doc, missed NPC-level | Started mid-hierarchy | Always check if topic is in Five-Year Plan first |
-| Can't find with English terms | Chinese policy docs are Chinese-first | Use Chinese keywords; primary source: gov.cn / npc.gov.cn |
+| 问题 | 原因 | 解决 |
+|------|------|------|
+| 漏掉五年规划 | 搜"政策文件"而非"规划纲要" | 第一步永远先查五年规划 |
+| 搜索结果停在2023-2024年 | 查询词含硬编码年份 | 用当前年或不加年份 |
+| 找到部委文件，忽略了NPC级别 | 从中间层开始搜 | 先看主题是否在规划里 |
+| 用英文关键词找不到 | 政策文件中文优先 | 改用中文关键词 |
+| 引用无文号的通知 | 非正式文件 | 找有文号的版本或上级文件 |
