@@ -1,6 +1,6 @@
 ---
 name: whitelist-timesync
-description: Sync system time on edge devices (Jetson, Raspberry Pi) when NTP is blocked by a whitelist network. Use this when a device behind a carrier SIM router or firewall can't reach NTP servers and time drift causes API auth failures (like OSS 403 RequestTimeTooSkewed).
+description: Sync system time on edge devices (Jetson, Raspberry Pi) when NTP is blocked by a whitelist network. Use this when a device behind a carrier SIM router or firewall can't reach NTP servers and time drift causes API auth failures (like OSS 403 RequestTimeTooSkewed). Triggers on: "时间同步", "NTP被封", "时钟漂移", "RequestTimeTooSkewed", "OSS 403", "Jetson时间", "白名单网络".
 ---
 
 ## Problem

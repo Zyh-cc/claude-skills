@@ -14,11 +14,13 @@ description: Use when the user asks to write, generate, or create a biweekly sum
    - 上期周报"二、工作计划"节 → 确认哪些已完成（加删除线）、哪些进行中
    - `memory/project_must.md` → MUST 系统最新状态
 
-2. **写 JS 脚本**，保存到周报目录，用 `NODE_PATH` 运行
+2. **[确认点]** 展示本期内容摘要（工作进展要点 + 工作计划3条）给用户确认，再继续
 
-3. **验证**：unpack.py 解压 + Read 工具读 XML 确认中文正常
+3. **写 JS 脚本**，保存到周报目录，用 `NODE_PATH` 运行
 
-4. **清理**：删除 JS 脚本和临时 unpacked_* 目录
+4. **验证**：unpack.py 解压 + Read 工具读 XML 确认中文正常
+
+5. **清理**：删除 JS 脚本和临时 unpacked_* 目录
 
 ---
 

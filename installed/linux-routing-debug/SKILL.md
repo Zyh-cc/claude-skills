@@ -1,6 +1,6 @@
 ---
 name: linux-routing-debug
-description: Debug Linux multi-NIC routing issues where traffic exits the wrong network interface. Use this when a device with multiple network cards (e.g., one for internet, one for LAN) fails external connections with "No route to host" or traffic goes out the wrong interface.
+description: Debug Linux multi-NIC routing issues where traffic exits the wrong network interface. Use this when a device with multiple network cards (e.g., one for internet, one for LAN) fails external connections with "No route to host" or traffic goes out the wrong interface. Triggers on: "路由问题", "流量走错网卡", "No route to host", "默认路由", "nmcli路由", "双网卡", "网络出口错误".
 ---
 
 ## Diagnosis
