@@ -1,6 +1,16 @@
 ---
 name: github-release
-description: Download files from GitHub Release pages using gh CLI. Use this whenever you need to get a download URL or download an installer/asset from a GitHub releases page — even if the user just says "download the latest version" or "get the .exe/.msi from GitHub".
+description: Download files from GitHub Release pages using gh CLI. Use this whenever you need to get a download URL or download an installer/asset from a GitHub releases page — even if the user just says "download the latest version" or "get the .exe/.msi from GitHub". Triggers on: "GitHub下载", "下载release", "下载安装包", "GitHub最新版本", "下载.exe/.msi", "gh release".
+---
+
+## 工具选择（先看这里）
+
+| 场景 | 工具 |
+|------|------|
+| GitHub Release 资产文件（installer/binary） | `gh release view --json assets` |
+| JS渲染页面（看不到资产列表） | agent-browser 识别文件名 → gh CLI 获取URL |
+| 普通静态页面内容 | WebFetch |
+
 ---
 
 ## Recommended approach: gh CLI
@@ -37,10 +47,3 @@ agent-browser snapshot -i
 | curl progress bar garbled | Terminal control chars unsupported | Run with `! curl ...` in terminal |
 | Newly installed skill not found | Skill list fixed at session start | Restart session |
 
-## Tool selection
-
-| Scenario | Tool |
-|----------|------|
-| Static page content | WebFetch |
-| JS-rendered page | agent-browser |
-| GitHub release asset URL | `gh release view --json assets` |
