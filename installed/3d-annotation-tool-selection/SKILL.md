@@ -1,104 +1,58 @@
 ---
 name: 3d-annotation-tool-selection
-description: Use when selecting or evaluating 3D point cloud annotation tools (labelCloud, 3DBat, SUSTechPOINTS) for UAV/LiDAR datasets with KITTI format, UTM coordinates, or non-standard ry conventions. Covers ry compatibility, large coordinate precision, round-trip safety, labelCloud critical config, full keyboard shortcuts, and Ctrl+C/V source code modification.
+description: labelCloud 操作手册：UAV/LiDAR点云标注配置、快捷键、Ctrl+C/V源码改造，以及工具选型依据（为何放弃3DBat）。Triggers on: "labelCloud", "标注配置", "点云标注", "标注快捷键", "Ctrl+C复制框", "3D annotation", "kitti_untransformed", "ry定义", "UTM坐标精度"
 ---
 
-## Three Must-Check Dimensions
+## 启动前必检（否则会静默清空标注文件）
 
-### 1. ry Definition Compatibility
-- **KITTI official**: ry = rotation around camera Y-axis (car-forward camera)
-- **UAV/LiDAR practice**: ry = yaw angle in XY plane (Z-axis rotation)
+**两个设置必须正确，错一个 labelCloud 就会在翻帧时自动保存空文件：**
 
-| Tool | ry Interpretation | Compatible with UAV yaw? |
-|------|------------------|--------------------------|
-| 3D BAT | KITTI camera Y-axis | ❌ Wrong direction |
-| labelCloud | Z-axis CCW yaw | ✅ Matches PCA yaw |
-| SUSTechPOINTS | Untested | ⚠️ Verify first |
-
-### 2. Large Coordinate Precision (UTM ~100万量级)
-| Backend | Float Precision | Error at UTM scale | Safe? |
-|---------|----------------|-------------------|-------|
-| WebGL (browser) | float32 | ~0.06m | ❌ |
-| Python/OpenGL | float64 | <1μm | ✅ |
-
-**3D BAT is WebGL → reject immediately for UTM coordinates.**
-
-### 3. Round-trip Safety (save → reload → same coordinates?)
-- **labelCloud**: no centering, raw UTM preserved ✅
-- **SUSTechPOINTS**: auto-centers, reverse transform unverified ⚠️
-
-## Recommended: labelCloud
-
-```bash
-pip install labelCloud
-labelCloud
-# Settings: LABEL_FORMAT = KITTI
+```
+Class name  : Car            ← 区分大小写，不能写 Vehicle / car / CAR
+Label format: kitti_untransformed   ← 不能选 kitti 或 kitti_camera
 ```
 
-Write point clouds as ASCII PCD (preserves float64, no precision loss):
-```python
-o3d.io.write_point_cloud(str(out_path), pcd, write_ascii=True)
-```
+配置位置：
+- `resources/_classes.json`（labelCloud 安装包内）
+- Settings UI → Label Format 下拉框
 
-## Pitfalls
-
-| Pitfall | Cause | Fix |
-|---------|-------|-----|
-| 3DBat bbox visually offset from cloud | WebGL float32 at UTM scale | Use Python-based tool |
-| 3DBat bbox rotated wrong | ry interpreted as camera Y-axis | Use labelCloud |
-| 3DBat image view useless | No real calib, only identity matrix | Feature unavailable without real calib |
+`kitti_untransformed` = bbox坐标直接存在LiDAR坐标系，无需标定变换。
 
 ---
 
-## labelCloud Critical Config (annotations get wiped if wrong)
+## 快捷键（从 controller.py 源码验证）
 
-**Two settings that MUST be correct, or labelCloud will silently clear your annotation files:**
+| 操作 | 按键 |
+|------|------|
+| **平移框** | W/S（Y轴），A/D（X轴），Q/E（Z轴升降） |
+| **旋转框** | Z/X（Z轴逆/顺时针），C/V（Y轴），B/N（X轴） |
+| **缩放框** | I/O（长），K/L（宽），,/.（高） |
+| **选择框** | T/↑（上一个），G/↓（下一个），1~9（直选） |
+| **翻帧** | F/→（下一帧，自动保存），R/←（上一帧） |
+| **删除框** | Delete |
+| **保存** | Ctrl+S |
+| **复制/粘贴** | Ctrl+C / Ctrl+V（需源码改造，见下） |
 
-```
-Class name : Car   (case-sensitive; Vehicle or car → loads 0 boxes → auto-save wipes file on next/prev)
-Label format: kitti_untransformed   (not kitti, not kitti_camera)
-```
+> UAV俯视场景：Z轴精度低（只有屋顶点），重点调XY位置（W/A/S/D）和偏航角（Z/X）。
 
-`kitti_untransformed` = bbox coords stored directly in LiDAR frame, no calibration transform needed.
+---
 
-Config locations: `resources/_classes.json` in the labelCloud package, and the Settings UI Label Format field.
+## Ctrl+C/V 源码改造（停车场等密集场景必备）
 
-## labelCloud Full Keyboard Shortcuts (verified from controller.py source)
+**文件**：`{env}/Lib/site-packages/labelCloud/control/controller.py`
 
-| Action | Key(s) |
-|--------|--------|
-| **Translate bbox** | W/S (Y), A/D (X), Q/E (Z up/down) |
-| **Rotate bbox** | Z/X (Z-axis CCW/CW), C/V (Y-axis), B/N (X-axis) |
-| **Scale bbox** | I/O (length), K/L (width), , /. (height) |
-| **Select bbox** | T/↑ (prev), G/↓ (next), 1~9 (direct) |
-| **Navigate files** | F/→ (next, auto-saves), R/← (prev) |
-| **Delete bbox** | Delete |
-| **Save** | Ctrl+S |
-| **Copy/Paste** | Ctrl+C / Ctrl+V *(requires source mod below)* |
-
-> For UAV top-down scenes, Z-axis accuracy is low (only roof points exist). Focus on XY position (W/A/S/D) and yaw rotation (Z/X keys).
-
-## labelCloud Source Mod: Add Ctrl+C/V Copy-Paste
-
-Useful for dense parking lots where many boxes share the same shape.
-
-**File**: `{env}/Lib/site-packages/labelCloud/control/controller.py`
-
-**Step 1** — add clipboard field in `__init__`:
+**Step 1**：在 `__init__` 加剪贴板字段：
 ```python
-self._clipboard_bbox = None  # for Ctrl+C / Ctrl+V duplicate
+self._clipboard_bbox = None
 ```
 
-**Step 2** — insert BEFORE the existing `elif a0.key() == Keys.Key_C:` block in `key_press_event`:
+**Step 2**：在 `key_press_event` 中，**在** 裸 `Key_C` 块**之前**插入：
 ```python
-# Copy active bbox to clipboard
 elif a0.key() == Keys.Key_C and self.ctrl_pressed:
     active = self.bbox_controller.get_active_bbox()
     if active is not None:
         self._clipboard_bbox = active
-        logging.info("Copied bounding box to clipboard.")
 
-# Paste clipboard bbox (duplicate with small offset)
 elif a0.key() == Keys.Key_V and self.ctrl_pressed:
     if self._clipboard_bbox is not None:
         from ..model.bbox import BBox
@@ -110,7 +64,17 @@ elif a0.key() == Keys.Key_V and self.ctrl_pressed:
         new_bbox.z_rotation = self._clipboard_bbox.z_rotation
         new_bbox.classname = self._clipboard_bbox.classname
         self.bbox_controller.add_bbox(new_bbox)
-        logging.info("Pasted bounding box from clipboard.")
 ```
 
-**Key rule**: Ctrl+C/V blocks must come BEFORE the bare C/V blocks, and check `self.ctrl_pressed`. Otherwise Ctrl+C triggers Y-axis rotation instead.
+**关键**：Ctrl+C/V 块必须在裸 C/V 块**之前**，否则 Ctrl+C 会触发Y轴旋转。
+
+---
+
+## 为何不用其他工具（选型依据）
+
+| 工具 | 放弃原因 |
+|------|---------|
+| **3D BAT** | WebGL float32精度在UTM坐标（~100万量级）下误差0.06m；ry定义为相机Y轴，与UAV偏航角不兼容 |
+| **SUSTechPOINTS** | 自动中心化坐标，反变换未验证，round-trip安全性未知 |
+
+**labelCloud 的优势**：ry = Z轴逆时针偏航角（与PCA方位角一致），float64坐标，`kitti_untransformed`格式直存LiDAR系。
