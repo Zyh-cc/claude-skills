@@ -1,13 +1,16 @@
 ---
 name: post-code-review
-description: Use when a new script has been written or significant code changes (>50 lines) have been made, before committing — to catch variable scope errors, cross-file integration mismatches, and naming convention gaps
+description: Use when a new script has been written or significant code changes (>50 lines) have been made, before committing. Triggers on: "写完了", "提交前检查", "code review", "检查一下代码", "提交前", "帮我review", "看看有没有bug", "校核脚本"
 ---
 
-## 触发条件
+## 快速决策
 
-写完新脚本 or 修改超过 50 行后，**提交前**必须执行本流程。
-
-例外（可跳过）：只改注释、改动 <10 行且无跨文件交互、纯 typo 修复。
+```
+新脚本 / 改动 >50 行？
+  ├── Yes → 执行本流程
+  └── No，但有跨文件字段传递 → 执行本流程
+      └── 只改注释/typo/<10行且无跨文件交互 → 跳过
+```
 
 ---
 
@@ -31,7 +34,15 @@ description: Use when a new script has been written or significant code changes 
 3. **命名约定遗漏**：若有命名规则变更，所有引用点（glob、格式字符串、硬编码路径）是否全部更新
 4. **初始化完整性**：dict 初始化是否包含所有后续可能访问的字段
 
-### 第二轮：确认修复（若第一轮发现 ≥2 个 bug 必做）
+### 第一轮结果处理
+
+| 情况 | 操作 |
+|------|------|
+| **0个 bug** | 直接提交，本流程结束 |
+| **1个 bug** | 修复后直接提交 |
+| **≥2个 bug** | 修复后必须执行第二轮 |
+
+### 第二轮：确认修复（第一轮发现 ≥2 个 bug 时必做）
 
 ```
 已修复：[列出修复内容]
