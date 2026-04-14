@@ -1,6 +1,6 @@
 ---
 name: gh-api-file-download
-description: Download files committed directly to a GitHub repository directory (not release assets) using gh api. Use this when the user wants to fetch a file that lives inside a repo folder — reports, generated docs, data files — not from the Releases page.
+description: Download files committed directly to a GitHub repository directory (not release assets) using gh api. Use this when the user wants to fetch a file that lives inside a repo folder — reports, generated docs, data files — not from the Releases page. Triggers on: "下载仓库文件", "从GitHub下载文件", "gh api下载", "contents API", "download_url".
 ---
 
 ## Recommended approach: gh api contents
@@ -41,3 +41,4 @@ curl -L -o "target\%LATEST%" "%URL%"
 |-------|-------|-----|
 | `download_url` is null | File >1MB, contents API omits content | Use `git.url` or clone the repo |
 | Chinese filename URL encoding errors | curl doesn't auto-encode | Use English+date filenames |
+| 403 on private repo | Not logged in or token lacks repo scope | Run `gh auth login` first; or set `GH_TOKEN` |
