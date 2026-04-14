@@ -1,6 +1,17 @@
 ---
 name: ffmpeg-rtsp-debug
-description: Debug ffmpeg RTSP camera stream recording issues. Use this when ffmpeg fails to record from an IP camera, RTSP connection times out, audio codec errors appear, or shell special characters cause command failures.
+description: Debug ffmpeg RTSP camera stream recording issues. Use this when ffmpeg fails to record from an IP camera, RTSP connection times out, audio codec errors appear, or shell special characters cause command failures. Triggers on: "ffmpeg录制失败", "摄像头连不上", "RTSP断流", "音频编码错误", "pcm_alaw", "RTSP超时", "ffmpeg RTSP".
+---
+
+## 快速诊断
+
+| 错误关键词 | 跳到 |
+|------------|------|
+| `pcm_alaw` / `Could not find tag for codec` | → 音频编码不兼容 |
+| `-bash: -c:v: command not found` | → URL含`&`特殊字符 |
+| `Connection timed out` / `Connection refused` | → 连接超时 |
+| 命令返回0但无输出文件 | → 路径/权限问题（Pitfall） |
+
 ---
 
 ## Common issues
