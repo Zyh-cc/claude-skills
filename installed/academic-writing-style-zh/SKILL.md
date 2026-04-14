@@ -1,6 +1,6 @@
 ---
 name: academic-writing-style-zh
-description: Use when checking or revising Chinese academic paper (thesis, literature review) writing style to identify and fix AI-like patterns such as parallel enumerations, definition-first paragraphs, uniform sentence lengths, overused filler words, and bracket abuse.
+description: Use when checking or revising Chinese academic paper (thesis, literature review) writing style to identify and fix AI-like patterns such as parallel enumerations, definition-first paragraphs, uniform sentence lengths, overused filler words, and bracket abuse. Triggers on: "AI腔", "论文润色", "学术写作", "排比句", "检查论文", "文风修改", "润色一下", "去除AI味".
 ---
 
 # 中文学术论文 AI 腔检查与修改流程
