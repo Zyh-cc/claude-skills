@@ -11,7 +11,8 @@
 | 文件 | 一句话描述 | 触发关键词 |
 |------|-----------|-----------|
 | [china-policy-search.md](document/china-policy-search.md) | 中国政府政策文件检索：层级顺序、年份陷阱、可引用格式 | 政策背景、政策文件、规划、论文引用、法规 |
-| [word-docx.md](document/word-docx.md) | .docx文件的读取、编辑、创建（含XML直接操作） | .docx、Word文档、docx |
+| [word-docx.md](document/word-docx.md) | .docx文件的读取、编辑、创建（含XML直接操作）；中文PDF提取用pdfplumber | .docx、Word文档、docx、PDF提取、pdfplumber、中文PDF |
+| [academic-writing-style-zh.md](document/academic-writing-style-zh.md) | 中文学术论文 AI 腔七类模式检查与修改（排比/定义句/均质句长/方面上述/过渡句/括号/强调词） | AI腔、论文风格、学术写作、查重、综述写作、中文论文、风格检查 |
 | [write-conversation-log.md](document/write-conversation-log.md) | 对话日志写作：科研精简风格 + 生活朋友视角两种语态 | 记录日志、写日志、日志、log |
 | [biweekly-report-docx.md](document/biweekly-report-docx.md) | 为张天承生成两周总结.docx周报（含格式规范、NODE_PATH坑、中文引号坑） | 周报、两周总结、两周报、work report |
 

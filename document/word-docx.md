@@ -1,9 +1,9 @@
 ---
 领域: document
-版本: v1.1
-最后更新: 2026-03-30
+版本: v1.2
+最后更新: 2026-04-14
 适用工具: Claude Code
-keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题, 格式, 报告, 论文
+keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题, 格式, 报告, 论文, pdf, pdfplumber, 中文PDF
 ---
 
 # Word (.docx) 文档编辑全流程
@@ -14,6 +14,7 @@ keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题,
 | v1.0 | 2026-03-26 | 初始版本 |
 | v1.1 | 2026-03-30 | 迁移至新格式，补充版本日志 |
 | v1.2 | 2026-04-11 | 补充§零"只读内容"标准流程；根因：未查技能树导致重复踩 GBK 编码坑 |
+| v1.3 | 2026-04-14 | 补充§零·5 中文 PDF 文本提取（pdfplumber vs pdftotext）|
 
 ## 零、只读内容（提取文本，不编辑）
 
@@ -40,6 +41,28 @@ open('C:/Temp/output.txt', 'w', encoding='utf-8').write('\n'.join(lines))
 # 用 Read 工具读取结果
 # Read: C:/Temp/output.txt
 ```
+
+---
+
+## 零·五、中文 PDF 文本提取
+
+**结论**：`pdftotext` 对中文 PDF 通常输出乱码；用 `pdfplumber`。
+
+**根因**：中文 PDF 字体往往缺少 ToUnicode CMap，`pdftotext`（poppler）无法将字形 ID 映射回 Unicode；`pdfplumber` 有独立的 CJK 字符处理路径，成功率更高。
+
+```python
+import pdfplumber
+
+with pdfplumber.open("文献.pdf") as pdf:
+    for page in pdf.pages:
+        text = page.extract_text()
+        if text:
+            print(text)
+```
+
+**安装**：`pip install pdfplumber`（已在用户环境验证可用）
+
+**仍然乱码**：极少数 PDF 使用完全私有字体（无任何映射），此时只能 OCR（pdf2image + pytesseract），但学术 PDF 极少见此情况。
 
 ---
 
