@@ -1,6 +1,6 @@
 ---
 name: gh-api-file-download
-description: Download files committed directly to a GitHub repository directory (not release assets) using gh api. Use this when the user wants to fetch a file that lives inside a repo folder — reports, generated docs, data files — not from the Releases page. Triggers on: "下载仓库文件", "从GitHub下载文件", "gh api下载", "contents API", "download_url".
+description: Download files committed directly to a GitHub repository directory (not release assets) using gh api. Use this when the user wants to fetch a file that lives inside a repo folder — reports, generated docs, data files — not from the Releases page. Triggers on: "下载仓库文件", "从GitHub下载文件", "gh api下载", "contents API", "download_url", "下载最新报告", "拉取最新文件", "直接下载到本地", "从仓库下载", "下载推上去的文件".
 ---
 
 ## Recommended approach: gh api contents
@@ -26,6 +26,20 @@ for /f "delims=" %%i in ('gh api repos/<owner>/<repo>/contents/<path> --jq "[.[]
 gh api repos/<owner>/<repo>/contents/<path>/%LATEST% --jq ".download_url" > %TEMP%\url.txt
 set /p URL=<%TEMP%\url.txt
 curl -L -o "target\%LATEST%" "%URL%"
+```
+
+## PowerShell 推荐写法（更可靠）
+
+**不要在 PowerShell 里用 `--jq`**：排序结果和类型转换行为不可预期，改用 `ConvertFrom-Json` 在 PS 里过滤。
+
+```powershell
+# 获取目录下最新 docx
+$files = gh api repos/<owner>/<repo>/contents/<path> | ConvertFrom-Json
+$latest = $files | Where-Object { $_.name -like "*.docx" } | Sort-Object name -Descending | Select-Object -First 1
+
+# 下载（Windows 用 Invoke-WebRequest，不用 curl）
+$localFile = Join-Path $targetDir $latest.name
+Invoke-WebRequest -Uri $latest.download_url -OutFile $localFile
 ```
 
 ## vs gh release
