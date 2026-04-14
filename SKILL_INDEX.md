@@ -59,6 +59,14 @@
 
 ---
 
+## 🎨 diagram — 图表与可视化
+
+| 文件 | 一句话描述 | 触发关键词 |
+|------|-----------|-----------|
+| [drawio](https://github.com/itoksk/drawio-skill)（第三方，已部署） | 生成 draw.io 原生 .drawio 文件，可导出 PNG/SVG/PDF | 技术路线图、流程图、draw.io、drawio、diagram、画图 |
+
+---
+
 ## 🛠️ tools — 工具配置
 
 | 文件 | 一句话描述 | 触发关键词 |
