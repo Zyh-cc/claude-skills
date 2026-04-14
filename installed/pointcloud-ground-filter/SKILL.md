@@ -1,72 +1,95 @@
 ---
 name: pointcloud-ground-filter
-description: Validate and compare point cloud ground segmentation methods (CSF, RANSAC) with Open3D visualization, and run DBSCAN clustering on merged non-ground frames. Use this when evaluating ground filtering algorithms on UAV or roadside LiDAR data, or when needing to visually inspect segmentation quality or cluster scene objects.
+description: UAV LiDAR 点云处理流水线参考（AeroGround/湖北数据）：CSF地面过滤、图像锚定窗口预标注、HDBSCAN聚类、预标注审核工作流。Triggers on: "地面过滤", "CSF", "预标注", "HDBSCAN", "审核框", "FP/FN", "labelCloud", "pointcloud pipeline", "点云流水线"
 ---
 
-## Validated parameters (UAV point cloud dataset, flight altitude 150m)
+## 数据特性（必读）
 
-| Method | Parameters | Result |
-|--------|-----------|--------|
-| **CSF original** | iter=500, res=0.5 | ✅ Stable, recommended |
-| CSF simplified | iter=100, res=1.0 | ❌ Unstable — misses 16.7% ground on some frames |
-| RANSAC + height | default | ❌ Systematic underestimate, not suitable for complex terrain |
+🔴 **湖北数据 = 重复扫描（V-FOV 3°）**：每帧只有横截面，单帧无法聚类。
+→ 必须合并 ±50帧 图像锚定窗口，再做HDBSCAN。
 
-## Local visualization setup
+🟢 **正式采集（双龙大道）= 非重复扫描（V-FOV 75°）**：单帧覆盖200m×200m，可逐帧处理。
+
+---
+
+## 已确定参数（不要改）
+
+| 步骤 | 参数/脚本 | 状态 |
+|------|-----------|------|
+| CSF地面过滤 | `cloth_resolution=0.5, iterations=500`，`3_ground_filter_parallel.py`，NUM_WORKERS=16 | ✅ 4060帧完成 |
+| 图像锚定窗口 | ±50帧合并，锚点 img_0011~img_0215 | ✅ 200窗口完成 |
+| HDBSCAN聚类 | 默认参数 + 2D PCA OBB + 形状过滤 → KITTI .txt | ✅ 9955框完成 |
+| 形状过滤 | 长 3–8m，宽 1.5–3m，Z std < 0.6m（车）/ > 0.6m（树），长宽比 l/w ≥ 1.3 | ✅ 已应用 |
+
+---
+
+## 当前工作：预标注审核
+
+### Step 1：逐窗口审核（标记FP/FN）
 
 ```bash
-cd project_dir
-python -m venv venv
-.\venv\Scripts\activate   # Windows
-pip install open3d numpy
+python vis_preannot_window.py --all
 ```
 
-Run in VSCode: `Ctrl+Shift+P` → `Python: Select Interpreter` → select `.\venv\Scripts\python.exe` → F5
+- 双击框 → 标记 FP（误检）
+- 键盘标记 FN（漏检，从 detail JSON rejected 追加）
+- Q 保存 → 生成 review log：`img_XXXX_N.json`
 
-## Visualization script features
+### Step 2：应用修正
 
-- Load raw point cloud + multiple method outputs
-- Keys 0/1/2/3: switch between method views
-- Keys E/W: next/previous frame
-- Auto-coloring: ground = brown, non-ground = green, raw = gray
+```bash
+python apply_review.py --gui
+```
 
-## Quality check criteria
+选择 review log → 预览修正 → 执行
 
-- ✅ Normal: green = vehicles/pedestrians/buildings/trees; brown = flat road surface
-- ❌ Abnormal: green mixed with obvious ground points, or brown containing clear objects
+- FP 删除：按坐标匹配（tol=0.01m）
+- FN 追加：从 detail JSON 的 rejected_shape/size 列表还原
 
-## Merged scene clustering (cluster_merged.py)
+### Step 3：确认修正
 
-Script: `src/visualization/cluster_merged.py`
+重新运行 `vis_preannot_window.py` 对应窗口，目视确认无误。
 
-**DBSCAN parameter tuning (3 parameters are coupled):**
+### Review log 命名规则
 
-| Parameter | Role | UAV 150m recommended |
-|-----------|------|----------------------|
-| `voxel` | Downsample grid size (m) | 0.3m |
-| `eps` | Neighbourhood radius (m) | 1.0m (2.0m causes building/vegetation merge) |
-| `min_pts` | Min neighbours to form cluster | 5 (vehicles are sparse at 150m) |
+| 场景 | 命名 |
+|------|------|
+| 单窗口 | `img_XXXX_N.json` |
+| 多窗口合并 | `img_XXXX_YYYY_N.json` |
 
-**Validated result (400 non-ground frames, voxel=0.3, eps=2.0, min_pts=5):**
-- 240 clusters, noise 0% (eps too large), median cluster size 41 pts
-- Buildings: largest clusters (100k–310k pts), Z centroid 18–28m
-- Vehicle candidates: small clusters (20–100 pts), Z centroid near ground
-- Problem: eps=2.0m merges vehicles with adjacent roadside vegetation → try eps=1.0m
+---
 
-**Post-processing filters to separate vehicles from vegetation:**
-- Bounding box: length 3–8m, width 1.5–3m
-- Z std dev: vehicles < 0.6m (flat roof), trees > 0.6m (irregular canopy)
-- Aspect ratio: l/w ≥ 1.3 distinguishes elongated vehicles from round tree crowns
+## 审核后：labelCloud 人工精调
 
-**Algorithm upgrade path:**
-- HDBSCAN: adaptive density, handles building (dense) + vehicle (sparse) coexistence; `pip install hdbscan`; good for paper comparison experiment
+```bash
+python src/utils/prepare_labelcloud.py
+# 输出到 labelcloud_data/point_clouds/ + labels/
+labelCloud
+```
+
+**关键配置（错了会清空标注）：**
+```
+Class name : Car          （区分大小写，不能写 Vehicle 或 car）
+Label format: kitti_untransformed
+```
+
+---
+
+## 未来：双龙大道正式数据流水线
+
+正式采集后用逐帧方案（非重复扫描，单帧密度足够）：
+
+```bash
+python pre_annotate_dbscan.py   # 逐帧DBSCAN，不需要窗口合并
+```
+
+---
 
 ## Pitfalls
 
-| Issue | Cause | Fix |
-|-------|-------|-----|
-| `UnicodeDecodeError` reading PCD | Chinese path on Windows | Use relative paths, run from correct working dir |
-| Chinese output garbled | Windows terminal GBK | Remove emoji or set UTF-8 output at script start |
-| File not found in VSCode | Wrong working directory | Run from data directory or use absolute paths |
-| CSF unstable on certain frames | Too few iterations (iter=100) | Use iter=500, res=0.5 |
-| Noise 0%, buildings merged into giant clusters | eps too large (2.0m) | Reduce eps to 1.0m |
-| Vehicles merge with roadside vegetation | Same height range (~1m), eps too large | Reduce eps + apply shape post-filtering |
+| 问题 | 原因 | 解决 |
+|------|------|------|
+| CSF某些帧漏分 | iter=100（精简参数） | 必须用 iter=500 |
+| labelCloud加载0个框后自动保存→清空文件 | Class name大小写不对 | 严格用 `Car` |
+| apply_review FP删不掉 | 坐标匹配tol太小 | 确认tol=0.01m，检查KITTI txt精度 |
+| 窗口合并帧数不够 | 飞行边缘帧±50超出范围 | 自动截断到有效范围，正常 |
