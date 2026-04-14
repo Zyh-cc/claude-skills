@@ -1,6 +1,6 @@
 ---
 name: claude-code-api-switch
-description: Switch Claude Code between official Anthropic account and a third-party relay API (中转站). Use this when the user wants to switch API sources, mentions foxcode/relay/中转站, or asks why Claude Code can't connect. Also covers the claudep.bat startup flow and proxy configuration.
+description: Switch Claude Code between official Anthropic account and a third-party relay API (中转站). Use this when the user wants to switch API sources, mentions foxcode/relay/中转站/切换API/API连不上/连接失败, or asks why Claude Code can't connect. Also covers the claudep.bat startup flow and proxy configuration. Triggers on: "切换API", "换中转", "foxcode", "relay", "连不上", "ECONNRESET", "claudep".
 ---
 
 ## File layout
@@ -25,6 +25,13 @@ switch-api             # Interactive menu
 ```
 
 Restart Claude Code after switching.
+
+**验证切换成功**：
+```bat
+REM Windows — 检查当前 settings.json 生效的模式
+findstr "ANTHROPIC_BASE_URL" %USERPROFILE%\.claude\settings.json
+REM 有输出 → foxcode 模式；无输出 → official 模式
+```
 
 ## How claudep.bat auto-detects mode
 
