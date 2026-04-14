@@ -72,6 +72,7 @@
 | 文件 | 一句话描述 | 触发关键词 |
 |------|-----------|-----------|
 | [zotero-pdf2zh-setup.md](tools/zotero-pdf2zh-setup.md) | Zotero + pdf2zh 中文翻译插件配置 | Zotero、pdf2zh、文献翻译、PDF翻译 |
+| [daily-book.md](tools/daily-book.md) | 像老朋友一样推荐一本书，幽默风趣，涵盖作者、类型、内容、感悟 | 给我讲本书、今天读什么、推荐一本书、每日读书、给我介绍本书、今天看什么书、读书推荐 |
 
 ---
 
