@@ -1,6 +1,6 @@
 ---
 name: resume-work
-description: Use when the user says "继续", "继续工作", "继续上次", "接着做", or starts a new session on an existing project
+description: Use when the user says "继续", "继续工作", "继续上次", "接着做", "新会话", "上次做到哪了", "从上次开始", or starts a new session on an existing project
 ---
 
 # 继续工作：最小化启动流程
@@ -23,6 +23,8 @@ gh api repos/Zyh-cc/AeroGround-Dataset/contents/docs/progress.md \
 ```
 
 MEMORY.md 已经在上下文里，不需要再读。
+
+> **注意**：`base64 -d` 需要 Git Bash 或 WSL，PowerShell 中应改为 `[System.Convert]::FromBase64String(...)` 或直接用 Read 工具读取 API 返回的 `content` 字段手动解码。当前用户环境已配置 Git Bash，命令可直接使用。
 
 ---
 
