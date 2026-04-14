@@ -1,7 +1,7 @@
 ---
 领域: data-processing
-版本: v1.0
-最后更新: 2026-04-13
+版本: v2.0
+最后更新: 2026-04-14
 适用工具: Claude Code
 ---
 
@@ -11,6 +11,7 @@
 | 版本 | 日期 | 变更内容 |
 |------|------|----------|
 | v1.0 | 2026-04-13 | 初始版本，基于 AeroGround-Dataset 3DBat→labelCloud 决策过程 |
+| v2.0 | 2026-04-14 | 新增 labelCloud 关键配置项、完整快捷键表、源码改造方法 |
 
 ## 问题场景
 
@@ -95,3 +96,70 @@ o3d.io.write_point_cloud(str(out_path), pcd, write_ascii=True)
 ## 相关经验
 
 - [点云地面滤除验证.md](点云地面滤除验证.md) — CSF 参数选择，预标注的上游步骤
+
+---
+
+## labelCloud 关键配置（踩坑后补充）
+
+### 必须正确配置的两项，否则标注文件会被清空
+
+```
+类别名称：Car（大小写敏感，不能用 Vehicle 或其他）
+标注格式：kitti_untransformed（不是 kitti，不是 kitti_camera）
+```
+
+原因：labelCloud 加载时按类别名匹配，名称不对则加载 0 框；翻到下一个文件时自动保存会把 0 框写回文件，**永久清空原标注**。`kitti_untransformed` 表示 bbox 坐标直接存 LiDAR 坐标系，不需要标定文件变换。
+
+配置位置：labelCloud 安装目录 `resources/_classes.json` 和 `Settings` 界面中的 Label Format。
+
+### 完整快捷键表（来自 controller.py 源码，2026-04-14 核实）
+
+| 操作 | 键 |
+|------|----|
+| **平移 bbox** | W/S/A/D（XY），Q/E（Z轴上/下） |
+| **旋转 bbox** | Z/X（绕Z逆/顺时针），C/V（绕Y），B/N（绕X） |
+| **缩放 bbox** | I/O（长度），K/L（宽度），,/.（高度） |
+| **选择 bbox** | T/↑（上一个），G/↓（下一个），1~9（直接选第N个） |
+| **导航** | F/→（下一文件），R/←（上一文件） |
+| **删除** | Delete |
+| **保存** | Ctrl+S |
+| **复制粘贴**（需源码改造，见下） | Ctrl+C / Ctrl+V |
+
+> ⚠️ UAV 俯视场景中 Z 轴精度意义不大（只有顶面点），标注时重点调 XY 位置（W/A/S/D）和旋转角（Z/X键）。
+
+### labelCloud 源码改造：新增 Ctrl+C/V 复制粘贴
+
+场景：密集停车场大量形状相同的停车位框，复制已有框再平移效率远高于逐个新建。
+
+修改文件：`{Python环境}/Lib/site-packages/labelCloud/control/controller.py`
+
+在 `__init__` 中添加剪贴板字段：
+```python
+self._clipboard_bbox = None  # for Ctrl+C / Ctrl+V duplicate
+```
+
+在 `key_press_event` 中，**在现有 `elif a0.key() == Keys.Key_C:` 之前**插入 Ctrl+C/V 判断：
+```python
+# Copy active bbox to clipboard
+elif a0.key() == Keys.Key_C and self.ctrl_pressed:
+    active = self.bbox_controller.get_active_bbox()
+    if active is not None:
+        self._clipboard_bbox = active
+        logging.info("Copied bounding box to clipboard.")
+
+# Paste clipboard bbox (duplicate with small offset)
+elif a0.key() == Keys.Key_V and self.ctrl_pressed:
+    if self._clipboard_bbox is not None:
+        from ..model.bbox import BBox
+        cx, cy, cz = self._clipboard_bbox.center
+        l, w, h = self._clipboard_bbox.get_dimensions()
+        new_bbox = BBox(cx + 0.5, cy, cz, l, w, h)
+        new_bbox.x_rotation = self._clipboard_bbox.x_rotation
+        new_bbox.y_rotation = self._clipboard_bbox.y_rotation
+        new_bbox.z_rotation = self._clipboard_bbox.z_rotation
+        new_bbox.classname = self._clipboard_bbox.classname
+        self.bbox_controller.add_bbox(new_bbox)
+        logging.info("Pasted bounding box from clipboard.")
+```
+
+注意：`ctrl_pressed` 是 controller 的已有字段，在 `Key_Control` 按下时置为 True。Ctrl+C/V 必须在独立的 `elif` 块中，且放在裸 C/V 键处理之前，否则 Ctrl+C 会触发 Y 轴旋转。
