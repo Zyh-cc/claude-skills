@@ -1,6 +1,6 @@
 ---
 name: windows-bat
-description: Write Windows bat scripts and add them as global commands. Use this whenever creating a .bat file, adding a directory to Windows PATH, or debugging bat script issues like encoding errors, variable expansion problems, or CRLF issues.
+description: Write Windows bat scripts and add them as global commands. Use this whenever creating a .bat file, adding a directory to Windows PATH, or debugging bat script issues like encoding errors, variable expansion problems, or CRLF issues. Triggers on: "bat脚本", "写bat", "bat文件", "全局命令", "添加PATH", "bat中文乱码", "变量展开", "for /f".
 ---
 
 ## Basic bat structure
@@ -67,3 +67,4 @@ Write-Host "正在处理..."
 | Command not found after PATH change | Current terminal doesn't reload PATH | Open new terminal |
 | `'/f' is not a command` | bat saved with Unix LF | Convert to CRLF |
 | Chinese chars corrupt adjacent commands | GBK reads UTF-8 multibyte, eats ASCII | No Chinese in bat files |
+| Relative paths break when bat is called from another dir | CWD changes, not bat's location | Use `%~dp0` prefix: `%~dp0script.ps1` always resolves to the bat's own directory |
