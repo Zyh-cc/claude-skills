@@ -60,6 +60,14 @@
 
 ---
 
+## 🌐 browser — 浏览器操作
+
+| 文件 | 一句话描述 | 触发关键词 |
+|------|-----------|-----------|
+| [playwright-data-verification.md](browser/playwright-data-verification.md) | 用 Playwright 搜百度核实文档数据：判断来源权威性、口径一致性、内外数字差异 | 核实数据、数据来源、数据可靠吗、数字对不上、查一下这个数据 |
+
+---
+
 ## 🎨 diagram — 图表与可视化
 
 | 文件 | 一句话描述 | 触发关键词 |
