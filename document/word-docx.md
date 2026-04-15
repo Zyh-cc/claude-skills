@@ -15,6 +15,7 @@ keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题,
 | v1.1 | 2026-03-30 | 迁移至新格式，补充版本日志 |
 | v1.2 | 2026-04-11 | 补充§零"只读内容"标准流程；根因：未查技能树导致重复踩 GBK 编码坑 |
 | v1.3 | 2026-04-14 | 补充§零·5 中文 PDF 文本提取（pdfplumber vs pdftotext）|
+| v1.4 | 2026-04-15 | 补充❿ 多 run 段落编辑模式（含格式化数字时段落拆为十余个 run）|
 
 ## 零、只读内容（提取文本，不编辑）
 
@@ -242,6 +243,58 @@ Claude Code 找不到 git-bash 可执行文件路径。
 ```bash
 export CLAUDE_CODE_GIT_BASH_PATH="D:\Git\bin\bash.exe"
 ```
+
+---
+
+### ❿ 多 run 段落：段落含格式化数字时被拆成十几个 run
+
+**现象**
+段落含有加粗数字、上标、超链接或混合样式时，python-docx 将其拆成多个 run。不能假设 `para.runs[1]` 含有完整正文。
+
+```
+段落文字：…累计举办260余期培训…
+runs 实际结构：
+  run0: '\t前缀文字'
+  run1: '260'          ← 独立 run（可能加粗/特殊样式）
+  run2: '余期培训…'
+  run3: '1.6'
+  run4: '万人次…'
+```
+
+**必须先检查 run 结构再编辑：**
+```python
+for i, r in enumerate(para.runs):
+    print(f'run{i}: {repr(r.text)}')
+```
+
+**编辑策略：**
+
+1. **在单个 run 内做字符串替换**（最简单）：
+```python
+r.text = r.text.replace('旧文字', '新文字')
+```
+
+2. **跨 run 边界删除/修改**：找到目标内容所在 run，逐个处理。若需截断，用 `str.find()` 定位再切片：
+```python
+idx = run.text.find('截断点')
+run.text = run.text[idx:]        # 保留截断点之后
+# 清空不需要的前置 run
+for r in para.runs[:target_run_idx]:
+    r.text = ''
+```
+
+3. **合并 run 后统一替换**（适合大改）：
+```python
+# 先读全文，改完写回第一个 run，其余清空
+full_text = para.text  # 已拼接所有 run
+new_text = full_text.replace(...)
+para.runs[0].text = new_text
+for r in para.runs[1:]:
+    r.text = ''
+# 注意：会丢失各 run 的独立格式（加粗、颜色）
+```
+
+**选用原则**：只改正文内容（不改格式）→ 方案3最简；需保留格式（数字加粗等）→ 方案1或2逐 run 精确修改。
 
 ---
 
