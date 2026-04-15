@@ -14,6 +14,7 @@
 | [word-docx.md](document/word-docx.md) | .docx文件的读取、编辑、创建（含XML直接操作）；中文PDF提取用pdfplumber | .docx、Word文档、docx、PDF提取、pdfplumber、中文PDF、读取pdf、pdf乱码、pdf文字提取 |
 | [academic-writing-style-zh.md](document/academic-writing-style-zh.md) | 中文学术论文 AI 腔七类模式检查与修改（排比/定义句/均质句长/方面上述/过渡句/括号/强调词） | AI腔、论文风格、学术写作、查重、综述写作、中文论文、风格检查 |
 | [write-conversation-log.md](document/write-conversation-log.md) | 对话日志写作：科研精简风格 + 生活朋友视角两种语态 | 记录日志、写日志、日志、log |
+| [chinese-doc-writing-strategy.md](document/chinese-doc-writing-strategy.md) | 四类中文文件写作策略：合作方案、调研方案、新闻稿、学校公文 | 帮我写、写方案、写新闻、写公文、写报告、写材料、起草、写通知、写提案、写调研 |
 | [biweekly-report-docx.md](document/biweekly-report-docx.md) | 为张天承生成两周总结.docx周报（含格式规范、NODE_PATH坑、中文引号坑） | 周报、两周总结、两周报、work report |
 
 ---
