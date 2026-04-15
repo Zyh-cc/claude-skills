@@ -1,7 +1,7 @@
 ---
 领域: document
-版本: v1.2
-最后更新: 2026-04-14
+版本: v1.5
+最后更新: 2026-04-15
 适用工具: Claude Code
 keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题, 格式, 报告, 论文, pdf, pdfplumber, 中文PDF
 ---
@@ -16,6 +16,7 @@ keywords: word, docx, xml, table, format, style, 文档, 排版, 表格, 标题,
 | v1.2 | 2026-04-11 | 补充§零"只读内容"标准流程；根因：未查技能树导致重复踩 GBK 编码坑 |
 | v1.3 | 2026-04-14 | 补充§零·5 中文 PDF 文本提取（pdfplumber vs pdftotext）|
 | v1.4 | 2026-04-15 | 补充❿ 多 run 段落编辑模式（含格式化数字时段落拆为十余个 run）|
+| v1.5 | 2026-04-15 | 补充§六 docx-js 生成文档：中文自动编号（一、二、三…）完整模板 |
 
 ## 零、只读内容（提取文本，不编辑）
 
@@ -500,6 +501,88 @@ for style in root.findall(f'.//{w("style")}'):
             color.attrib.clear()
             color.set(w('val'), '000000')
 ```
+
+---
+
+---
+
+## 六、docx-js 生成文档：中文自动编号（一、二、三…）
+
+> 适用场景：用 Node.js `docx` 包从零生成 .docx，需要 Word 原生可更新的中文编号列表。
+
+### 6.1 完整模板
+
+```javascript
+const { Document, Packer, Paragraph, TextRun, AlignmentType, LevelFormat } = require('docx');
+const fs = require('fs');
+
+// 建议在运行前设置 NODE_PATH（全局安装 docx 时）
+// NODE_PATH=C:/Users/13613/AppData/Roaming/npm/node_modules node gen.js
+
+const doc = new Document({
+  numbering: {
+    config: [
+      {
+        reference: 'chinese-numbering',
+        levels: [
+          {
+            level: 0,
+            format: LevelFormat.CHINESE_COUNTING,  // 一, 二, 三...
+            text: '%1、',
+            alignment: AlignmentType.LEFT,
+            suffix: 'nothing',    // ← 关键：去掉编号后的制表符
+            style: {
+              paragraph: { indent: { left: 0, hanging: 0 } },
+              run: { size: 24, bold: true, font: 'SimSun' }
+            }
+          }
+        ]
+      }
+    ]
+  },
+  sections: [{
+    properties: {
+      page: {
+        size: { width: 11906, height: 16838 },   // A4
+        margin: { top: 1440, right: 1800, bottom: 1440, left: 1800 }
+      }
+    },
+    children: [
+      // 标题
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        children: [new TextRun({ text: '文档标题', bold: true, size: 32, font: 'SimSun' })]
+      }),
+      // 空行
+      new Paragraph({ children: [new TextRun('')] }),
+      // 列表项（每条调用一次）
+      new Paragraph({
+        numbering: { reference: 'chinese-numbering', level: 0 },
+        indent: { left: 0, hanging: 0 },   // ← 也必须在段落上设，否则仍有缩进
+        children: [new TextRun({ text: '正文内容', size: 24, font: 'SimSun' })]
+      }),
+    ]
+  }]
+});
+
+Packer.toBuffer(doc).then(buf => {
+  fs.writeFileSync('output.docx', buf);
+  console.log('Done');
+});
+```
+
+### 6.2 关键坑一览
+
+| 坑 | 正确做法 |
+|----|---------|
+| `suffix` 未设置 → 编号后有明显制表符缩进 | 在 level 配置加 `suffix: 'nothing'` |
+| 只在 numbering style 的 `style.paragraph` 设 indent，段落仍缩进 | **每个 Paragraph** 上都要显式设 `indent: { left: 0, hanging: 0 }` |
+| 全局安装 docx 后 `Cannot find module 'docx'` | 运行前 `export NODE_PATH=C:/Users/13613/AppData/Roaming/npm/node_modules` 或已写入 `~/.bashrc` |
+| 文件被 Word 打开时 `PermissionError` | 先关 Word，或输出到临时文件再手动替换 |
+
+### 6.3 编号更新
+
+生成的文档在 Word 中打开后，若手动增删条目导致编号不连续，执行 **Ctrl+A → F9** 强制刷新域，编号自动重排。
 
 ---
 
