@@ -5,6 +5,91 @@ description: Use when user wants to plot academic figures, reproduce paper figur
 
 # 学术图绘制（MATLAB / Python）
 
+## 顶刊规范速查（Nature / Science / IEEE）
+
+| 参数 | 单栏 | 双栏 | 说明 |
+|------|------|------|------|
+| 图宽 | 90mm (3.54in) | 180mm (7.09in) | `figsize=(mm(90), mm(h))` |
+| 最大高度 | — | 170mm (6.69in) | Nature 限制 |
+| 字体 | Arial / Helvetica | ← 同 | sans-serif，禁用宋体/楷体 |
+| 标签字号 | 6pt | ← 同 | tick 5.5pt，面板标签 7-8pt bold |
+| 线宽（数据） | 0.6-1.0pt | ← 同 | 时间序列密集时用 0.6 |
+| 轴线/tick | 0.8pt | ← 同 | tick 内向，长 3pt |
+| 边框样式 | 去顶/右边框 | ← 同 | open style（更现代）|
+| 颜色 | Okabe-Ito | ← 同 | 色盲友好，见下方 |
+| 面板标签 | **(a)(b)(c)** | ← 同 | 小写加粗，左上角 |
+| 导出 | PDF + PNG | ← 同 | PDF 矢量投稿，PNG 预览 |
+| DPI | 300（彩色）| 600（线图）| `pdf.fonttype=42` 嵌入字体 |
+
+```python
+def mm(x): return x / 25.4   # mm → inch 换算
+```
+
+## Okabe-Ito 色板（色盲友好，Nature 推荐）
+
+```python
+OI_BLUE      = '#0072B2'   # 主色，时间序列首选
+OI_VERMILION = '#D55E00'   # 对比色
+OI_GREEN     = '#009E73'
+OI_ORANGE    = '#E69F00'
+OI_SKY_BLUE  = '#56B4E9'
+OI_GRAY      = '#8C8C8C'   # 背景/次要线
+# 禁止：纯红+纯绿组合（红绿色盲无法区分）
+```
+
+## Python 顶刊全局设置（放在脚本最顶部）
+
+```python
+import matplotlib as mpl
+mpl.rcParams.update({
+    'font.family':      'sans-serif',
+    'font.sans-serif':  ['Arial', 'DejaVu Sans'],
+    'font.size':        6,
+    'axes.linewidth':   0.8,
+    'axes.labelsize':   6,
+    'xtick.labelsize':  5.5,
+    'ytick.labelsize':  5.5,
+    'xtick.major.size': 3,
+    'ytick.major.size': 3,
+    'xtick.major.width':0.8,
+    'ytick.major.width':0.8,
+    'xtick.direction':  'in',
+    'ytick.direction':  'in',
+    'legend.fontsize':  5.5,
+    'legend.frameon':   False,
+    'figure.facecolor': 'white',
+    'pdf.fonttype':     42,   # 嵌入字体，IEEE/Nature 要求
+    'ps.fonttype':      42,
+})
+```
+
+## Open Style 轴（去顶/右边框）
+
+```python
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_linewidth(0.8)
+ax.spines['left'].set_linewidth(0.8)
+ax.tick_params(axis='both', direction='in', length=3, width=0.8,
+               top=False, right=False)
+```
+
+## 面板标签 (a)(b)(c)
+
+```python
+# 每个子图左上角加面板标签
+ax.text(-0.15, 1.08, '(a)', transform=ax.transAxes,
+        fontsize=7, fontweight='bold', va='top', ha='left')
+```
+
+## 顶刊导出
+
+```python
+# PDF 矢量（投稿首选）+ PNG 预览
+fig.savefig('figure.pdf', bbox_inches='tight', facecolor='white')
+fig.savefig('figure.png', dpi=300, bbox_inches='tight', facecolor='white')
+```
+
 ## 工作流（接到任务时按顺序执行）
 
 **Step 1 — 探测数据结构**（不能跳过）
