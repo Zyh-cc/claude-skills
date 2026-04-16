@@ -96,6 +96,7 @@
 | [聚类预标注调参分析框架.md](data-processing/聚类预标注调参分析框架.md) | 聚类过滤后的调参诊断：置信度分层统计、疑似漏检/误报检测、GUI分析工具设计 | 聚类、预标注、调参、置信度、漏检、误报、DBSCAN、HDBSCAN、analyze_detail |
 | [open3d-interactive-review.md](data-processing/open3d-interactive-review.md) | Open3D bbox交互审核：Ray-OBB射线拾取、FP/FN双击标记、窗口缓存保留状态、JSON日志输出 | open3d、交互、鼠标回调、bbox拾取、射线、ray、OBB、FP、FN、标记、审核日志 |
 | [tkinter-multi-tool-studio.md](data-processing/tkinter-multi-tool-studio.md) | 多个 tkinter 工具整合为向导式单窗口：parent=None 嵌入模式、StepBar、线程安全、bind_all 坑 | tkinter、整合、向导、单窗口、嵌入、parent、工作台、多工具、GUI整合 |
+| [academic-plot.md](data-processing/academic-plot.md) | MATLAB/Python 学术论文图绘制：多子图布局/时间序列样式/传感器数据预处理/导出坑 | 画图、成图、出图效果、复现论文图、MATLAB绘图、Python画图、matplotlib、学术图、传感器、时间序列、子图 |
 ---
 
 ## 🗂️ skills-management — 技能库管理
