@@ -17,6 +17,7 @@
 | [chinese-doc-writing-strategy.md](document/chinese-doc-writing-strategy.md) | 四类中文文件写作策略：合作方案、调研方案、新闻稿、学校公文 | 帮我写、写方案、写新闻、写公文、写报告、写材料、起草、写通知、写提案、写调研 |
 | [task-driven-thesis-framework.md](document/task-driven-thesis-framework.md) | 导师说"创新点动机不足/缺少需求分析层"时，用五步法重构任务驱动的方法论框架 | 论文框架、导师说框架不行、创新点动机、为什么做这个、缺少需求分析、方法论重构、任务驱动、应用场景 |
 | [biweekly-report-docx.md](document/biweekly-report-docx.md) | 为张天承生成两周总结.docx周报（含格式规范、NODE_PATH坑、中文引号坑） | 周报、两周总结、两周报、work report |
+| [literature-based-report-verification.md](document/literature-based-report-verification.md) | 调研报告文献引用核查：风险分级、pdftotext+grep工作流、虚构引用识别与修复 | 核查引用、文献核实、调研报告、引用来源、quote核查、pdftotext、查论文原文、引用是否真实 |
 
 ---
 
