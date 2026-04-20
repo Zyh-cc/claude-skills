@@ -1,25 +1,36 @@
 ---
 name: greet-with-memory
-description: Use when the user says "你好", "hi", "hello", "早" or any greeting at the start of a conversation — loads local and global memory before responding
+description: Use when the user says "你好", "hi", "hello", "早", "嗨", "在吗", "hey" or any greeting at the start of a conversation — checks local memory then responds with context-aware greeting
 ---
 
 # 问候时加载记忆
 
 ## 触发条件
 
-用户说"你好"、"hi"、"hello"、"早"等问候语时触发。
+用户以问候语开启对话时触发，包括但不限于：
+- 中文：你好、早、嗨、在吗、哈喽、晚上好、下午好、早上好
+- 英文：hi、hello、hey、morning、good morning
 
 ## 执行流程
 
-**并行读取以下记忆：**
+**第一步：全局记忆**
 
-1. **全局记忆**：`C:\Users\13613\.claude\projects\E----------------------\memory\MEMORY.md`（已在上下文则跳过）
-2. **本地记忆**：检查当前工作目录下是否有 `.claude/memory/` 或本地 `CLAUDE.md`，有则读取
+全局记忆（MEMORY.md）已由系统自动注入到 system-reminder 中，无需重复读取。
 
-读完后正常回复问候，**不向用户汇报读了哪些文件**。
+**第二步：检查本地记忆**
+
+用 Glob 工具扫描当前工作目录下的 `.claude/memory/*.md`，若存在则逐一读取。
+
+**第三步：状态感知回复**
+
+回复问候时，自然地体现出已了解上下文，例如：
+- 提及用户姓名（张煜珩）
+- 提及当前活跃项目或近期任务状态
+- 语气简洁自然，不超过两句话
 
 ## 不要做
 
-- 不要列出读了哪些记忆文件
-- 不要把 MEMORY.md 内容复述给用户
-- 不要因为读记忆而延迟回复
+- 不要列出读了哪些文件
+- 不要复述 MEMORY.md 的内容
+- 不要重复读取已在 system-reminder 中的全局记忆
+- 不要因读记忆而延迟回复
