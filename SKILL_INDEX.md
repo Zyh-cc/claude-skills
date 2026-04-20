@@ -98,6 +98,7 @@
 | [open3d-interactive-review.md](data-processing/open3d-interactive-review.md) | Open3D bbox交互审核：Ray-OBB射线拾取、FP/FN双击标记、窗口缓存保留状态、JSON日志输出 | open3d、交互、鼠标回调、bbox拾取、射线、ray、OBB、FP、FN、标记、审核日志 |
 | [tkinter-multi-tool-studio.md](data-processing/tkinter-multi-tool-studio.md) | 多个 tkinter 工具整合为向导式单窗口：parent=None 嵌入模式、StepBar、线程安全、bind_all 坑 | tkinter、整合、向导、单窗口、嵌入、parent、工作台、多工具、GUI整合 |
 | [academic-plot.md](data-processing/academic-plot.md) | MATLAB/Python 学术论文图绘制：多子图布局/时间序列样式/传感器数据预处理/导出坑 | 画图、成图、出图效果、复现论文图、MATLAB绘图、Python画图、matplotlib、学术图、传感器、时间序列、子图 |
+| [proprietary-binary-reverse-engineering.md](data-processing/proprietary-binary-reverse-engineering.md) | 已知明文攻击破解私有二进制格式：四阶段方法（块结构→记录大小→明文攻击→角度解码），含 DJI L2 LDR 完整速查 | 逆向、二进制格式、私有协议、LDR、DJI、点云流、Euler约定、已知明文攻击、binary reverse engineering |
 ---
 
 ## 🗂️ skills-management — 技能库管理
@@ -106,5 +107,6 @@
 |------|-----------|-----------|
 | [resume-work.md](skills-management/resume-work.md) | 继续工作的最小化启动：只拉 progress.md 末尾节，不过度读文件 | 继续、继续工作、继续上次、接着做、resume |
 | [create-skill.md](skills-management/create-skill.md) | 把当前经验生成技能的完整七步流程（source→installed→index→deploy→test→push） | 把这个生成技能、写成技能、记录成技能、保存为技能、create skill |
+| [greet-with-memory.md](skills-management/greet-with-memory.md) | 用户打招呼时自动并行读取全局记忆和本地记忆 | 你好、hi、hello、早、早上好、开始工作 |
 | [skill-lifecycle.md](skills-management/skill-lifecycle.md) | 技能文件的创建、更新、归档规范 | 新建技能、更新技能、技能模板 |
 | [skill-tree-architecture.md](skills-management/skill-tree-architecture.md) | 技能树目录结构设计原则 | 技能树结构、分类、组织 |
